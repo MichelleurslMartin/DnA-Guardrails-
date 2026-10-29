@@ -32,7 +32,7 @@ The objective is to help a Delivery Lead answer five questions:
 
 If you have just been assigned as Delivery Lead:
 
- 
+
 → Understand your Delivery Lead responsibilities
 
 → Review the contract and delivery assumptions
