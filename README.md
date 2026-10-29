@@ -1,97 +1,145 @@
-| :point_up:    | Remember: Change all the information in this file when your project is created, following the comments between the ``` symbols. |
-|---------------|:------------------------|
+# Deliver & Accelerate for Business Applications
 
-# avanade-template
-> This is an example template for Avanade Open Source and InnerSource projects.
+## Delivery Lead Knowledge Hub
 
-```
-Add a short description of your project.
-DELETE THIS COMMENT
-```
+ 
 
-[![Commitizen friendly](https://img.shields.io/badge/commitizen-friendly-brightgreen.svg)](http://commitizen.github.io/cz-cli/)
-![GitHub issues](https://img.shields.io/github/issues/Avanade/avanade-template)
-![GitHub](https://img.shields.io/github/license/Avanade/avanade-template)
-![GitHub Repo stars](https://img.shields.io/github/stars/Avanade/avanade-template?style=social)
-[![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-2.1-4baaaa.svg)](https://avanade.github.io/code-of-conduct/)
-[![Incubating InnerSource](https://img.shields.io/badge/Incubating-Ava--Maturity-%23FF5800?labelColor=yellow)](https://avanade.github.io/maturity-model/)
+Welcome to the Delivery Lead Knowledge Hub for Deliver & Accelerate for
 
-```
-Update the repository URL addresses for the shield templates.
-DELETE THIS COMMENT
-```
+Business Applications, formerly ADF for BA.
 
-## Overview
-Describe the project in more detail. **This project is an example project, to be used when creating new Avanade Open Source projects.**
+ 
 
-```
-Add a description of your project, and a screenshot if possible.
-DELETE THIS COMMENT
-```
+## 🎯 Purpose
+
+ 
+
+This repository is the practical operating guide for Delivery Leads.
+
+ 
+
+It brings together the guidance, guardrails, tools, templates, checklists,
+
+examples and learning resources required to successfully mobilize, govern
+and operate a Business Applications project using Deliver & Accelerate.
+
+The objective is not to replicate the methodology
+ 
+The objective is to help a Delivery Lead answer five questions:
+
+1. What do I need to do?
+
+2. When do I need to do it?
+
+3. How do I do it?
+
+4. Which tools, templates and artefacts should I use?
+
+5. How do I know that my project is ready to move forward
+ 
+---
+
+ 
+
+## 🚀 New to the project? Start here
+
+ 
+
+If you have just been assigned as Delivery Lead:
+ 
+→ Understand your Delivery Lead responsibilities
+
+→ Review the contract and delivery assumptions
+
+→ Start the Mobilization Checklist
+
+→ Confirm Mobilization and methodology support
+
+→ Establish the project governance model
+
+→ Set up DnA and the Implementation Model
+
+→ Establish the delivery cadence
+
+→ Complete the Mobilization Readiness Check
+
+ 
+
+[Start your project →](./01-Start-Here/README.md)
+
+ 
+
+---
 
 
-## Licensing
-avanade-template is UNLICENSED and for internal use only, without legal review. See the Avanade Open Source site to start legal approvals.
-```
-The avanade-template is available under the MIT licence, but subsequent projects created on Avanade InnerSource are not.
-Update the project name and licence.
-DELETE THIS COMMENT
-```
-
-## Solutions Referenced
-
-- [Azure SQL Database ledger tables](https://docs.microsoft.com/en-us/azure/azure-sql/database/ledger-overview?WT.mc_id=AI-MVP-5004204)
-- [Azure Confidential Ledger](https://docs.microsoft.com/en-gb/azure/confidential-ledger/?WT.mc_id=AI-MVP-5004204)
+## 🧭 Navigate by where you are
 
 
-```
-These are provided as examples. Include links to components you have used, or delete this section.
-DELETE THIS COMMENT
-```
 
-## Documentation
-The `docs` folder contains [more detailed documentation](./docs/start-here.md), along with setup instructions.
+### 🟢 Mobilize
 
-```
-Add an optional installation or usage section, if the instructions are <3 lines
-e.g.
-### Installation
+Set the project up for success.
 
-### Usage
+ 
 
-DELETE THIS COMMENT
-```
+### 🔵 Plan & Analyze
 
-## Contact
-Feel free to [raise an issue on GitHub](https://github.com/Avanade/avanade-template/issues), or see our [security disclosure](./SECURITY.md) policy.
-```
-Update the repo URL.
-DELETE THIS COMMENT
-```
-## Contributing
-Contributions are welcome. See information on [contributing](./CONTRIBUTING.md), as well as our [code of conduct](https://avanade.github.io/code-of-conduct/). Avanade asks that all commits sign the [Developer Certificate of Origin](https://developercertificate.org/).
+Establish control of scope, requirements, design, plan and governance.
 
-If you're happy to follow these guidelines, then check out the [getting started](./docs/start-here.md) guide.
+ 
 
-```
-Leave the code of conduct unchanged
-DELETE THIS COMMENT
-```
+### 🟠 Execute Delivery
 
-## Who are Avanade?
+Manage build, test, deployment, risks, dependencies, team and commercials.
 
-[Avanade](https://www.avanade.com) is the world’s leading expert on Microsoft. Trusted by over 7,000 clients worldwide, we deliver AI-driven solutions that unlock the full potential of people and technology, optimize operations, foster innovation and drive growth.
+ 
+### 🟣 Prepare for Phase Transition
 
-As Microsoft’s Global SI Partner we combine global scale with local expertise in AI, cloud, data analytics, cybersecurity, and ERP to design solutions that prioritize people and drive meaningful impact.
+Validate that required activities and deliverables are complete.
 
-We champion diversity, inclusion, and sustainability, ensuring our work benefits society and business.
+ 
 
-Learn more at [www.avanade.com](https://www.avanade.com)
+### 🔴 Recover / Escalate
 
-```
-If needed, review the Open Source site on the intranet for more information.
+Guidance for projects requiring intervention or escalation.
 
-Full details at https://avanade.sharepoint.com/sites/opensource and https://community.avanade.com
 
-DELETE THIS COMMENT
-```
+---
+
+ 
+
+## 🛡️ Delivery Lead Guardrails
+
+
+Across every phase, Delivery Leads are expected to maintain control over:
+ 
+- Scope
+- Plan and milestones
+- Risks, issues and dependencies
+- Financials and commercials
+- Resources and capacity
+- Client governance
+- Quality
+- DnA / Implementation Model
+- Contractual commitments
+- Phase readiness
+ 
+The methodology is not documentation for documentation's sake.
+
+Project artefacts should support active project management and reflect
+the reality of the project
+
+ 
+## 📚 What will I find here?
+ 
+
+- Delivery Lead Playbook
+- Mobilization Toolkit
+- Phase-by-Phase Guidance
+- Governance & Reporting Standards
+- Checklists & Readiness Assessments
+- Templates & Examples
+- Quality / QAD Preparation
+- Training & Coaching
+- AI-enabled Delivery Lead support
+- Frequently Asked Questions
