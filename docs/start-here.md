@@ -1,101 +1,47 @@
-# Documentation Overview
+# Delivery Lead Journey
 
-This repository provides a sample of patterns and practices for Avanade projects.
-```
-Update this description.
-DELETE THIS COMMENT
-```
+This guide organizes project-running guidance around the Delivery Lead's journey, from getting started through deployment and ongoing support.
 
-## Related
+> Deliver & Accelerate tells us how we deliver. This repository tells a Delivery Lead how to apply it to run a project.
 
-- **[How to contribute](../CONTRIBUTING.md)**
-- **[Our code of conduct](../CODE_OF_CONDUCT.md)**
+Use the sections below as a route through the repository. Start with the role and operating model, then follow the project lifecycle or jump to the guidance you need now.
 
-## Folder Structure
-```
-Add additional folders that your project uses
-DELETE THIS COMMENT
-```
-- docs - documentation, process flows and state diagrams, and technical architecture.
-- test - automated tests
-- .vscode - configuration and recommendations for the VS Code IDE.
-- .devcontainer - default configuration for GitHub codespaces or containerized development.
+## Start Here
 
-# Getting started
-## Installation
+Understand the Delivery Lead role, the project operating model, and the methodology at a high level. This section also explains how to use this repository and find the right guidance.
 
-### Software Installation for Node
-```
-Delete this section if your project doesn't use node
-DELETE THIS COMMENT
-```
+## Mobilize Your Project
 
-1. Open the `.env.template` file, and update with your settings - save it as `.env`
-2. Run `npm install` to ensure you have all dependencies.
-3. Run the development server with `npm run dev`
-4. Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Prepare to start delivery: project setup, staffing, coaches, work environment, contract awareness, and a mobilization checklist. The existing Delivery-Capability guidance points Delivery Leads to mobilization, contract management, onboarding, and deliverable responsibility.
 
-## Python Tooling
-```
-Delete this section if your project doesn't use python
-DELETE THIS COMMENT
-```
+## Run Your Project
 
-The tooling uses Python, and we recommend using a conda environment when installing requirements, for example:
+Use a day-to-day and weekly operating rhythm to keep delivery moving. Guidance here covers DnA, RAID, financials, delivery control, and team governance.
 
-```bash
-$ conda create --name distribdata python=3.9 -y
-$ conda activate distribdata
-$ pip install -r requirements-dev.txt
-```
+## Govern & Report
 
-### Software Installation for Python
-```
-Delete this section if your project doesn't use python
-DELETE THIS COMMENT
-```
+Prepare for SteerCo, maintain status reporting and dashboards, run checkpoints, and escalate issues at the right time.
 
-1. Create a separate Python environment for your installation, and activate it. You have two options:
+## Manage by Phase
 
-   a. _Use a Conda distribution_
+Follow required activities, deliverables, and entry and exit criteria across the project lifecycle, from mobilization through delivery and deployment. Use the phase-based guardrails to make expectations clear at each transition.
 
-   If you are using a distribution of conda, you may want to create a new conda environment, rather than use venv:
+## Quality & Readiness
 
-   `conda create --name distribdata python=3.9 -y`
+Prepare for QAD and QA, use technical checklists and health checks, and gather evidence that the project is ready to move through a phase.
 
-   b. _Use a Python virtual environment_
+## Templates & Tools
 
-   On Windows, you may need to use `python` command where there are references to the `python3` command.
+Find approved project artifacts in one place, including templates, checklists, dashboards, and other tools. This is the single index for artifacts used across the journey.
 
-   On linux, you may need to run `sudo apt-get install python3-venv` first.
+## Coaching & Support
 
-   ```bash
-   $ python3 -m venv env
-   $ source env/bin/activate
-   $ pip3 install -r requirements-dev.txt
-   ```
+Find help from the Mobilization Coach, DnA support, the Delivery Community of Practice, training, and project contacts.
 
-2. Install the required dependencies in your new Python environment.
+## AI for Delivery Leads
 
-   ```bash
-   $ pip3 install -r requirements-dev.txt
-   ```
+This is the future home for AI-enabled Delivery Lead support, including Phase Readiness and QAD Preparation.
 
-   The `requirements.txt` file can be used alone if you don't intend to develop further.
+## Relationship to the methodology
 
-### Running the SQL code directly
-```
-Delete this section if your project doesn't have SQL
-DELETE THIS COMMENT
-```
-
-You can use the [SQL Server](https://marketplace.visualstudio.com/items?itemName=ms-mssql.mssql) extension for VS Code to run the SQL ledger examples directly. On non-windows machines, make sure you have drivers for MS SQL installed.
-
-On a mac, you can run the following commands:
-
-```
-brew install unixodbc
-brew tap microsoft/mssql-release https://github.com/Microsoft/homebrew-mssql-release
-brew update
-brew install msodbcsql mssql-tools
-```
+The **ADF Overview Final - Working Version** remains the methodology and training view of Deliver & Accelerate for BA, including its workstreams, roles, RACI, and delivery approaches. This repository complements that view with practical guidance for applying the methodology to run a project; it is not a duplicate of the methodology itself.
