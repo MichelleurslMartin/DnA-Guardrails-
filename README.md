@@ -31,6 +31,7 @@ The objective is to help a Delivery Lead answer five questions:
 ## 🚀 New to the project? Start here 
 
 If you have just been assigned as Delivery Lead:
+
  
 → Understand your Delivery Lead responsibilities
 
