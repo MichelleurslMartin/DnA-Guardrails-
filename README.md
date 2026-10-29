@@ -1,97 +1,27 @@
-| :point_up:    | Remember: Change all the information in this file when your project is created, following the comments between the ``` symbols. |
-|---------------|:------------------------|
+# Delivery Lead Guardrails
 
-# avanade-template
-> This is an example template for Avanade Open Source and InnerSource projects.
+A practical guide to applying Deliver & Accelerate (DnA) to run a project.
 
-```
-Add a short description of your project.
-DELETE THIS COMMENT
-```
+> Deliver & Accelerate tells us how we deliver. This repository tells a Delivery Lead how to apply it to run a project.
 
-[![Commitizen friendly](https://img.shields.io/badge/commitizen-friendly-brightgreen.svg)](http://commitizen.github.io/cz-cli/)
-![GitHub issues](https://img.shields.io/github/issues/Avanade/avanade-template)
-![GitHub](https://img.shields.io/github/license/Avanade/avanade-template)
-![GitHub Repo stars](https://img.shields.io/github/stars/Avanade/avanade-template?style=social)
-[![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-2.1-4baaaa.svg)](https://avanade.github.io/code-of-conduct/)
-[![Incubating InnerSource](https://img.shields.io/badge/Incubating-Ava--Maturity-%23FF5800?labelColor=yellow)](https://avanade.github.io/maturity-model/)
+## Start your journey
 
-```
-Update the repository URL addresses for the shield templates.
-DELETE THIS COMMENT
-```
+Use the [Delivery Lead journey guide](./docs/start-here.md) to find guidance for each part of the role:
 
-## Overview
-Describe the project in more detail. **This project is an example project, to be used when creating new Avanade Open Source projects.**
+- [Start Here](./docs/start-here.md#start-here)
+- [Mobilize Your Project](./docs/start-here.md#mobilize-your-project)
+- [Run Your Project](./docs/start-here.md#run-your-project)
+- [Govern & Report](./docs/start-here.md#govern-report)
+- [Manage by Phase](./docs/start-here.md#manage-by-phase)
+- [Quality & Readiness](./docs/start-here.md#quality-readiness)
+- [Templates & Tools](./docs/start-here.md#templates-tools)
+- [Coaching & Support](./docs/start-here.md#coaching-support)
+- [AI for Delivery Leads](./docs/start-here.md#ai-for-delivery-leads)
 
-```
-Add a description of your project, and a screenshot if possible.
-DELETE THIS COMMENT
-```
+## How this relates to Deliver & Accelerate
 
+This repository is for applying the methodology to project leadership, not for duplicating the methodology itself. The **ADF Overview Final - Working Version** remains the methodology and training view of Deliver & Accelerate for BA, including its workstreams, roles, RACI, and delivery approaches.
 
-## Licensing
-avanade-template is UNLICENSED and for internal use only, without legal review. See the Avanade Open Source site to start legal approvals.
-```
-The avanade-template is available under the MIT licence, but subsequent projects created on Avanade InnerSource are not.
-Update the project name and licence.
-DELETE THIS COMMENT
-```
-
-## Solutions Referenced
-
-- [Azure SQL Database ledger tables](https://docs.microsoft.com/en-us/azure/azure-sql/database/ledger-overview?WT.mc_id=AI-MVP-5004204)
-- [Azure Confidential Ledger](https://docs.microsoft.com/en-gb/azure/confidential-ledger/?WT.mc_id=AI-MVP-5004204)
-
-
-```
-These are provided as examples. Include links to components you have used, or delete this section.
-DELETE THIS COMMENT
-```
-
-## Documentation
-The `docs` folder contains [more detailed documentation](./docs/start-here.md), along with setup instructions.
-
-```
-Add an optional installation or usage section, if the instructions are <3 lines
-e.g.
-### Installation
-
-### Usage
-
-DELETE THIS COMMENT
-```
-
-## Contact
-Feel free to [raise an issue on GitHub](https://github.com/Avanade/avanade-template/issues), or see our [security disclosure](./SECURITY.md) policy.
-```
-Update the repo URL.
-DELETE THIS COMMENT
-```
 ## Contributing
-Contributions are welcome. See information on [contributing](./CONTRIBUTING.md), as well as our [code of conduct](https://avanade.github.io/code-of-conduct/). Avanade asks that all commits sign the [Developer Certificate of Origin](https://developercertificate.org/).
 
-If you're happy to follow these guidelines, then check out the [getting started](./docs/start-here.md) guide.
-
-```
-Leave the code of conduct unchanged
-DELETE THIS COMMENT
-```
-
-## Who are Avanade?
-
-[Avanade](https://www.avanade.com) is the world’s leading expert on Microsoft. Trusted by over 7,000 clients worldwide, we deliver AI-driven solutions that unlock the full potential of people and technology, optimize operations, foster innovation and drive growth.
-
-As Microsoft’s Global SI Partner we combine global scale with local expertise in AI, cloud, data analytics, cybersecurity, and ERP to design solutions that prioritize people and drive meaningful impact.
-
-We champion diversity, inclusion, and sustainability, ensuring our work benefits society and business.
-
-Learn more at [www.avanade.com](https://www.avanade.com)
-
-```
-If needed, review the Open Source site on the intranet for more information.
-
-Full details at https://avanade.sharepoint.com/sites/opensource and https://community.avanade.com
-
-DELETE THIS COMMENT
-```
+See [Contributing](./CONTRIBUTING.md) for the contribution process.
