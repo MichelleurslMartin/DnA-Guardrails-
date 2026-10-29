@@ -2,21 +2,13 @@
 
 ## Delivery Lead Knowledge Hub
 
- 
-
 Welcome to the Delivery Lead Knowledge Hub for Deliver & Accelerate for
 
 Business Applications, formerly ADF for BA.
 
- 
-
 ## 🎯 Purpose
 
- 
-
 This repository is the practical operating guide for Delivery Leads.
-
- 
 
 It brings together the guidance, guardrails, tools, templates, checklists,
 
@@ -24,7 +16,6 @@ examples and learning resources required to successfully mobilize, govern
 and operate a Business Applications project using Deliver & Accelerate.
 
 The objective is not to replicate the methodology
- 
 The objective is to help a Delivery Lead answer five questions:
 
 1. What do I need to do?
@@ -36,14 +27,8 @@ The objective is to help a Delivery Lead answer five questions:
 4. Which tools, templates and artefacts should I use?
 
 5. How do I know that my project is ready to move forward
- 
----
 
- 
-
-## 🚀 New to the project? Start here
-
- 
+## 🚀 New to the project? Start here 
 
 If you have just been assigned as Delivery Lead:
  
@@ -63,53 +48,34 @@ If you have just been assigned as Delivery Lead:
 
 → Complete the Mobilization Readiness Check
 
- 
 
-[Start your project →](./01-Start-Here/README.md)
+[Start your project →](./01-Start-Here/README.md) 
 
- 
-
----
-
+--
 
 ## 🧭 Navigate by where you are
-
-
 
 ### 🟢 Mobilize
 
 Set the project up for success.
 
- 
-
 ### 🔵 Plan & Analyze
 
 Establish control of scope, requirements, design, plan and governance.
-
- 
 
 ### 🟠 Execute Delivery
 
 Manage build, test, deployment, risks, dependencies, team and commercials.
 
- 
 ### 🟣 Prepare for Phase Transition
 
-Validate that required activities and deliverables are complete.
-
- 
+Validate that required activities and deliverables are complete
 
 ### 🔴 Recover / Escalate
 
 Guidance for projects requiring intervention or escalation.
 
-
----
-
- 
-
 ## 🛡️ Delivery Lead Guardrails
-
 
 Across every phase, Delivery Leads are expected to maintain control over:
  
@@ -132,7 +98,6 @@ the reality of the project
  
 ## 📚 What will I find here?
  
-
 - Delivery Lead Playbook
 - Mobilization Toolkit
 - Phase-by-Phase Guidance
