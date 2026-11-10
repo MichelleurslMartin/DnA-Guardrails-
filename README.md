@@ -1,111 +1,30 @@
 # Deliver & Accelerate for Business Applications
 
-## Delivery Lead Knowledge Hub
+## Delivery Lead Project Guide
 
-Welcome to the Delivery Lead Knowledge Hub for Deliver & Accelerate for
+This repository helps a Delivery Lead (DL) move a Business Applications project from assignment through mobilization, delivery, transition, and closure. Use it as a working guide: identify the current stage, complete the actions, capture evidence in the project's agreed tools, and check readiness before moving forward.
 
-Business Applications, formerly ADF for BA.
+It complements the approved methodology, contract, and project controls. It does not replace them, and it is not a project record system.
 
-## 🎯 Purpose
+## Start here
 
-This repository is the practical operating guide for Delivery Leads.
+New to a project, or need to reorient? Begin with the [Delivery Lead project journey](./docs/start-here.md). It covers:
 
-It brings together the guidance, guardrails, tools, templates, checklists,
+- Mobilize: confirm the delivery context and establish the team and controls.
+- Plan and analyze: agree scope, requirements, design, estimates, and the delivery plan.
+- Execute delivery: manage progress, quality, changes, risks, and stakeholder decisions.
+- Prepare for phase transition: verify evidence, acceptance, and the next phase's readiness.
+- Recover or escalate: stabilize delivery, make decisions visible, and agree a recovery path.
+- Close: confirm acceptance, handover, outstanding obligations, and lessons learned.
 
-examples and learning resources required to successfully mobilize, govern
-and operate a Business Applications project using Deliver & Accelerate.
+Recovery is available at any point in the project; it is not a final lifecycle stage.
 
-The objective is not to replicate the methodology
-The objective is to help a Delivery Lead answer five questions:
+## How to use this repository
 
-1. What do I need to do?
+1. Find the project stage in the journey guide.
+2. Tailor the actions to the contract, approved methodology, client needs, and project context.
+3. Assign each action an owner and due date in the project workspace.
+4. Link evidence and decisions from the agreed system of record.
+5. Review readiness with the right stakeholders and record the outcome before proceeding.
 
-2. When do I need to do it?
-
-3. How do I do it?
-
-4. Which tools, templates and artefacts should I use?
-
-5. How do I know that my project is ready to move forward
-
-## 🚀 New to the project? Start here 
-
-If you have just been assigned as Delivery Lead:
-
-
-→ Understand your Delivery Lead responsibilities
-
-→ Review the contract and delivery assumptions
-
-→ Start the Mobilization Checklist
-
-→ Confirm Mobilization and methodology support
-
-→ Establish the project governance model
-
-→ Set up DnA and the Implementation Model
-
-→ Establish the delivery cadence
-
-→ Complete the Mobilization Readiness Check
-
-
-[Start your project →](./01-Start-Here/README.md) 
-
---
-
-## 🧭 Navigate by where you are
-
-### 🟢 Mobilize
-
-Set the project up for success.
-
-### 🔵 Plan & Analyze
-
-Establish control of scope, requirements, design, plan and governance.
-
-### 🟠 Execute Delivery
-
-Manage build, test, deployment, risks, dependencies, team and commercials.
-
-### 🟣 Prepare for Phase Transition
-
-Validate that required activities and deliverables are complete
-
-### 🔴 Recover / Escalate
-
-Guidance for projects requiring intervention or escalation.
-
-## 🛡️ Delivery Lead Guardrails
-
-Across every phase, Delivery Leads are expected to maintain control over:
- 
-- Scope
-- Plan and milestones
-- Risks, issues and dependencies
-- Financials and commercials
-- Resources and capacity
-- Client governance
-- Quality
-- DnA / Implementation Model
-- Contractual commitments
-- Phase readiness
- 
-The methodology is not documentation for documentation's sake.
-
-Project artefacts should support active project management and reflect
-the reality of the project
-
- 
-## 📚 What will I find here?
- 
-- Delivery Lead Playbook
-- Mobilization Toolkit
-- Phase-by-Phase Guidance
-- Governance & Reporting Standards
-- Checklists & Readiness Assessments
-- Templates & Examples
-- Quality / QAD Preparation
-- Training & Coaching
-- AI-enabled Delivery Lead support
-- Frequently Asked Questions
+Across all stages, keep scope, schedule, financials, people, risks and issues, dependencies, quality, governance, and contractual commitments current. Use project artefacts to support decisions and reflect actual delivery status.

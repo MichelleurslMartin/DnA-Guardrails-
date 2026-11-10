@@ -1,0 +1,15 @@
+export {
+  AddRegular,
+  ArrowClockwiseRegular,
+  ArrowRightRegular,
+  ArrowSyncCheckmarkRegular,
+  BoxRegular,
+  BuildingRegular,
+  CheckmarkCircleRegular,
+  ClipboardTaskRegular,
+  DataBarVerticalRegular,
+  EditRegular,
+  HomeRegular,
+  LightbulbRegular,
+  ShieldTaskRegular,
+} from '@fluentui/react-icons';

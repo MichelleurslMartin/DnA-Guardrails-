@@ -4,98 +4,128 @@
 
 ## Background and Problem Statement
 
-[Describe the current situation and the problem your product aims to solve]
+The Delivery Lead's problem is not a lack of information. It is cognitive overload.
 
-[Include details about:
-- Current state of the market/industry
-- Specific pain points users experience
-- Why existing solutions are inadequate
-- Who is affected by this problem
-- The impact of not solving this problem]
+**Today**
 
-**Example structure:**
-- Problem overview and context
-- Specific user challenges (bulleted list)
-- Market gap analysis
-- Impact statement
+Fragmented tools and information
+
+→ manual interpretation
+
+→ manual consolidation
+
+→ late signals
+
+→ inconsistent execution
+
+→ the Delivery Lead acts reactively
+
+**With an AI Delivery Lead Companion**
+
+Project context, methodology, and delivery evidence
+
+→ continuous interpretation
+
+→ early warning
+
+→ recommended next-best action
+
+→ relevant templates and guidance
+
+→ the Delivery Lead makes the decision
+
+**Outcome**
+
+Less administration. Earlier intervention. More consistent delivery. More time for leadership and client value.
+
+This positioning complements, rather than competes with, the existing AI Powered Delivery Management strategy, whose stated purpose is to improve productivity, quality, decision-making, client value, and growth outcomes. See *Global Launch: AI Powered Delivery Management SIG (All Regions)*.
+
+The product should not create another repository or another isolated agent. It should be the intelligent front door and daily operating companion for the Delivery Lead.
 
 ## Product Vision Statement
 
-[Write a clear, compelling vision statement that describes what your product will achieve and how it will transform the user experience]
+**Product Owner:** Revenue and Delivery Lead of CEE ERP (single accountable owner).
 
-[Your vision should include:
-- What the product will accomplish
-- Who will benefit from it
-- How it will solve the identified problems
-- The unique value proposition
-- Long-term goals and aspirations]
+Create an intelligent Delivery Lead Companion that continuously understands the project, anticipates what needs attention, and guides the Delivery Lead toward the next best action, while keeping accountability and judgment with the human.
+
+### Product Outcomes
+
+From managing projects individually to learning and optimizing as a portfolio.
+
+**For the project:**
+
+Keep delivery continuously aligned with the client's vision and expected business outcomes, identifying deviations and recommending interventions before they become delivery problems.
+
+**For the ERP portfolio:**
+
+Turn signals from every engagement into comparable portfolio intelligence, enabling earlier leadership intervention, smarter capability allocation, and stronger commercial control.
+
+**For Avanade:**
+
+Create a continuous learning system where every project makes the next project better.
 
 ## Architecture
 
-[Describe your product's technical architecture and how components work together]
+The Companion brings together project context, approved delivery methodology, and current delivery evidence from authorized connected tools. It interprets that information in the context of the project's stage and presents the Delivery Lead with:
 
-This template supports applications built with Python Microsoft Semantic Kernel framework and TypeScript frontends. The architecture enables multi-agent AI systems where specialized agents collaborate to deliver comprehensive functionality.
+- A clear recommended next step, with the reason and relevant guidance.
+- A dashboard of flags that need review, prioritized by urgency and potential impact.
+- Links from each recommendation or flag to its supporting information and directly to the tool and location where the Delivery Lead should act.
 
-**Template Architecture Includes:**
-- **Backend Framework**: Python with Semantic Kernel for AI agent orchestration
-- **Frontend Framework**: TypeScript for user interface development
-- **AI Integration**: Support for Azure OpenAI and other LLM providers
-- **Plugin System**: Extensible plugin architecture for specialized functionality
-- **Agent Communication**: Dynamic routing and coordination between AI agents
+The Delivery Lead reviews the evidence and makes the decision. Where a connected tool supports an approved update flow, the Companion may prepare the required data for review, but it does not submit changes without the Delivery Lead's approval. The connected tool remains the system of record; the Companion provides guidance, context, and navigation rather than becoming another project repository.
+
+At portfolio level, authorized project signals can be normalized for comparison and trend review, while respecting access controls and the source of each signal.
 
 ## Agent Definitions
 
-[Define your AI agents and their specific roles and responsibilities]
+Start with one bounded **Delivery Lead Companion** AI capability, not a separate agent for every project stage or connected tool. The product should provide the reliable workflow, data access, controls, and user interface; AI should be used where interpreting context or language adds value.
 
-**Template Agent Examples:**
+### DL Companion AI
 
-1. **[Primary Agent Name] (Orchestrator Agent)**
-   - [Primary responsibility and role]
-   - [Key functions it performs]
-   - [How it coordinates with other agents]
-   - [User interaction responsibilities]
+- **Purpose:** Help the DL understand what changed, what needs attention, and what to do next, using authorized project context, delivery evidence, and approved methodology.
+- **Use AI for:** Summarizing information across sources; explaining why a flag may matter; relating evidence to guidance; identifying possible conflicts or gaps; recommending a next action with reasons; and drafting a status note, decision brief, or proposed update for DL review.
+- **Return:** A concise finding, supporting source links, relevant guidance, uncertainty or missing information, a recommended action, and a link to the tool and record where the DL can act.
+- **Boundaries:** Distinguish source facts from interpretation. Do not invent policy, silently resolve conflicting evidence, approve decisions, change project baselines, or submit updates without explicit DL approval. Respect source permissions and identify unavailable data.
 
-2. **[Secondary Agent Name]**
-   - [Specific domain expertise]
-   - [Key responsibilities]
-   - [Data it manages or processes]
-   - [Integration points with other agents]
+### The DL's Daily Loop
 
-3. **[Additional Agent Name]**
-   - [Specialized function]
-   - [Input/output responsibilities]
-   - [Performance criteria]
-   - [Dependencies on other components]
+1. **Start the day:** Product logic gathers authorized due dates, changed records, and configured thresholds to show upcoming work and flags. AI summarizes the most important changes and explains why they may need attention.
+2. **Review and act:** For each item, the Companion shows the evidence and applicable guidance, recommends a next step, and links to the exact source and action location. The DL decides what to do and completes or approves the action in the connected tool.
+3. **Respond to change:** When new evidence arrives or a project record changes, product logic refreshes affected flags. AI can explain what changed and whether the recommendation should be reconsidered.
+4. **Prepare the delivery cadence:** AI can draft a status summary, meeting brief, or decision request from current evidence. The DL checks it before sharing; the product tracks the action or approval state.
+5. **Manage gates and exceptions:** Product logic presents the applicable checklist and highlights missing or overdue evidence. AI can summarize readiness, open concerns, and options, but accountable stakeholders make gate, recovery, escalation, and closure decisions.
 
-[Add more agents as needed for your specific use case]
+### Product Logic Versus AI
+
+- **Product logic, no agent needed:** Authentication and permissions; reading records through approved connectors; lifecycle checklists; due-date and threshold checks; status and approval tracking; deep links; controlled writes; and audit history. These should be predictable, testable, and rule-based wherever possible.
+- **AI is useful:** Interpreting unstructured project material, bringing evidence from several sources together, explaining possible implications, and drafting tailored recommendations or communications. AI output must include evidence and remain reviewable.
+- **DL and accountable owners:** Set priorities, accept risks, approve changes, make commitments, escalate, and decide whether a project is ready to move stages.
+
+Do not add specialist agents unless a distinct, measurable need emerges that the single Companion capability cannot meet. A later portfolio analysis capability may help compare trends across engagements, subject to access, data quality, and governance controls.
 
 ## Communication Flow
 
-[Describe how agents communicate and coordinate with each other]
+The flow is organized around the Delivery Lead's work, not communication between multiple agents:
 
-**Example Communication Pattern:**
-```
-User Input → [Primary Agent] → Routes to appropriate agent(s)
-                    ↓
-[Agent A] ↔ [Agent B] ↔ [Agent C] ↔ [Agent D]
-                    ↓
-                [Primary Agent] → User Output
-```
+1. **Open the Companion:** The DL sees one dashboard of open to-dos, upcoming work, and flags that need review, based on the projects and records they are authorized to access.
+2. **Understand the task:** Each item explains what needs attention, why it matters, the supporting evidence, and the relevant Avanade guidance or template. AI may summarize context or recommend a next step, with links to its sources.
+3. **Go to the system where work belongs:** Each item links to the relevant record or action in the owning tool. For example, resource and project-plan updates go to MME; project-status updates go to myWizzard; and invoicing checks go to HVLV.
+4. **Take action:** The DL reviews the information and makes the update in the destination tool. The destination remains the system of record. Any prepared update requires DL review and approval before submission.
+5. **Confirm and track:** Where an approved connection can verify the result, the Companion refreshes the to-do from that source. Otherwise, the DL marks it complete and records a note or evidence link. Opening a destination tool alone does not count as completion.
 
-- [Describe inter-agent communication protocols]
-- [Explain coordination mechanisms]
-- [Detail shared state management]
-- [Specify integration framework (e.g., Semantic Kernel)]
+The Companion should use authenticated, permission-aware connections and direct links where the destination tool supports them. If a link, access right, or completion check is unavailable, it should say so and provide the known destination rather than imply that an action was completed. MME, myWizzard, and HVLV are example destinations; their exact records, links, and integration capabilities must be confirmed with their owners.
 
 ## Technical Requirements
 
 ### Core System
 
-- **Framework**: [Your backend framework] with [Your frontend framework]
-- **AI Integration**: [Your LLM provider and integration method]
-- **State Management**: [How you track application state]
-- **Data Storage**: [Your data storage solution]
-- **Real-time Updates**: [Real-time communication requirements]
+- **Framework**: The current prototype uses React and TypeScript for the workbench, a Node.js/TypeScript API, and Vite for local development. Keep external tool access behind the API so browser code does not handle tool credentials.
+- **AI Integration**: No AI endpoint is configured by default. The financial-governance reason-idea endpoint can call a server-side Azure OpenAI deployment when approved settings are supplied through `AZURE_OPENAI_ENDPOINT`, `AZURE_OPENAI_API_KEY`, and `AZURE_OPENAI_DEPLOYMENT` (optional: `AZURE_OPENAI_API_VERSION`). It receives pay-period dates, hour totals, variance, and reconciliation status only; consultant names, enterprise IDs, cost collectors, and DL comments are excluded. Ideas are unverified hypotheses, and AI must not determine a cause, change MME, approve a change request, or submit updates.
+- **State Management**: Connected business tools remain the systems of record. The Companion tracks only information needed to manage its workflow, such as task status, source links, approvals, and audit history. Show where each fact came from and when it was last checked.
+- **Financial Governance**: Compare MME planned resource hours, Azure DevOps planned task hours aggregated to the same pay period, and HVLV submitted actual hours. Do not attempt person-level matching to Azure DevOps tasks when tasks do not carry resource identities; retain a separate MME-to-HVLV resource check.
+- **Data Storage**: The prototype currently uses PGlite for local storage. Choose the production data store through security and architecture review. Store the minimum needed; avoid copying full project records when a secure link or reference will do.
+- **Real-time Updates**: Real-time updates are not needed for the first release. Start with refresh when the DL opens the dashboard and show the last sync time. Add scheduled or event-based updates when connected tools support them, with a clear warning when data is stale or a sync fails.
+- **Security and Operations**: Require approved sign-in and role-based access. Respect each source tool's permissions, protect secrets, and record important access and user-approved actions for audit.
 
 ### [Domain-Specific System Name]
 

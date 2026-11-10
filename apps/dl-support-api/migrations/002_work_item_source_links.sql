@@ -1,0 +1,3 @@
+ALTER TABLE work_items
+  ADD COLUMN source_tool TEXT NOT NULL DEFAULT '',
+  ADD COLUMN source_url TEXT NOT NULL DEFAULT '';

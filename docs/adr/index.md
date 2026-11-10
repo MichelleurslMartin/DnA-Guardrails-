@@ -17,6 +17,8 @@ This directory contains Architecture Decision Records (ADRs) for the Agentic Adv
 | Number | Title | Status | Date | Description |
 |--------|-------|--------|------|-------------|
 | 0000 | [Using ADRs](template.md) | Accepted | 2025-06-10 | Template for architecture decisions |
+| 0001 | [Persist Workbench Records Through a Local PostgreSQL API](0001-local-postgresql-workbench-api.md) | Proposed | 2026-10-29 | Add a loopback Node.js API and PostgreSQL-compatible local persistence without seed data |
+| 0002 | [Offer Optional AI Variance Ideas Through Azure OpenAI](0002-optional-azure-openai-variance-ideas.md) | Proposed | 2026-11-09 | Generate anonymized, unverified prompts for DL review without exposing resource identity or comments |
 
 ## ADR Statuses
 

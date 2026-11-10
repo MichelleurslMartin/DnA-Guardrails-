@@ -1,0 +1,21 @@
+{
+  "name": "dl-support-api",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "build": "tsc --noEmit",
+    "dev": "tsx watch src/server.ts",
+    "start": "tsx src/server.ts",
+    "migrate": "tsx src/migrate.ts",
+    "smoke": "tsx src/smoke.ts"
+  },
+  "dependencies": {
+    "@electric-sql/pglite": "^0.3.14"
+  },
+  "devDependencies": {
+    "@types/node": "^24.10.0",
+    "tsx": "^4.20.6",
+    "typescript": "~5.9.2"
+  }
+}
