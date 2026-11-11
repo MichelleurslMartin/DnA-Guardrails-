@@ -8,6 +8,9 @@ const migrations = [
   { version: '001_initial_schema', file: '001_initial_schema.sql' },
   { version: '002_work_item_source_links', file: '002_work_item_source_links.sql' },
   { version: '003_hvlv_reconciliation_comments', file: '003_hvlv_reconciliation_comments.sql' },
+  { version: '004_portfolio_projects', file: '004_portfolio_projects.sql' },
+  { version: '005_portfolio_project_engagements', file: '005_portfolio_project_engagements.sql' },
+  { version: '006_project_scoped_hvlv_comments', file: '006_project_scoped_hvlv_comments.sql' },
 ] as const;
 
 export type Database = PGlite;

@@ -11,6 +11,7 @@ import {
 import {
   ClipboardTaskRegular,
   DataBarVerticalRegular,
+  BuildingRegular,
   HomeRegular,
   ShieldTaskRegular,
 } from './icons';
@@ -24,6 +25,7 @@ const routes = [
   { path: '/', label: 'Delivery Workbench', icon: <HomeRegular /> },
   { path: '/lifecycle', label: 'Lifecycle Playbook', icon: <DataBarVerticalRegular /> },
   { path: '/engagements', label: 'Engagement Checks', icon: <ShieldTaskRegular /> },
+  { path: '/portfolio', label: 'Portfolio', icon: <BuildingRegular /> },
   { path: '/actions', label: 'Actions & Decisions', icon: <ClipboardTaskRegular /> },
 ];
 

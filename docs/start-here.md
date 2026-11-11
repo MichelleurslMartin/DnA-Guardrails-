@@ -16,16 +16,22 @@ The checks below are prompts, not universal approval gates. The Delivery Lead co
 
 - Review the contract, statement of work, assumptions, scope, deliverables, acceptance terms, and constraints.
 - Confirm the sponsor, client and delivery leads, team roles, decision owners, and escalation routes.
+- Build a stakeholder map covering internal roles such as SOA, stream leads, QAD, and the Mobilization Coach, as well as customer sponsors, leads, and decision makers. Record relationship owners, decision rights, communication needs, and escalation routes.
+- Reach out to the SOA and stream leads to establish an internal working cadence. Schedule QAD and Mobilization Coach checkpoints where applicable, and agree customer relationship touchpoints with the sponsor and key stakeholders.
 - Connect the project to its engagement records:
 	- In AEP, open the engagement for this project and verify its name or ID against the approved contract or statement of work.
 	- In BizApps Platform, open the matching DnA engagement and verify that it refers to the same client and project.
 	- Record both engagement links or IDs in the project workspace. If either record is missing, inaccessible, or does not match, assign the correction or access request to the platform owner and track it to resolution.
 - Align on the delivery approach, implementation model, environments, tools, and required access.
 - Establish the initial plan, milestones, budget and forecast baseline, delivery cadence, and reporting approach.
+- Confirm the CFM-to-DL handover for the MME engagement, cost collectors, resource plan, planned hours, and forecast baseline; agree who maintains changes.
+- Align Azure DevOps task-estimate scope and iteration dates to the MME reporting period. Treat DevOps planned hours as an aggregate when tasks do not identify resources.
+- Confirm the fortnightly HVLV submission cutoff and approval path, plus the expected transfer lag through myTE to MME actuals.
+- Agree who reviews MME plan, DevOps task estimates, and HVLV submissions, when they review, and how verified variances flow through project governance. Do not set universal thresholds here.
 - Start the RAID log (risks, assumptions, issues, and dependencies), decision log, and change control.
 - Identify required onboarding, security, privacy, quality, and compliance activities.
 
-**Evidence to keep:** Contract and assumption review; verified AEP and BizApps Platform DnA engagement links or IDs; team and governance map; initial plan and financial baseline; RAID and decision logs; access and environment actions; agreed cadence.
+**Evidence to keep:** Contract and assumption review; stakeholder map, relationship owners, and internal/customer cadence; verified AEP and BizApps Platform DnA engagement links or IDs; team and governance map; initial plan and financial baseline; CFM-to-DL MME handover; DevOps estimate scope and period; HVLV submission and transfer timing; financial review owners and response path; RAID and decision logs; access and environment actions; agreed cadence.
 
 **Ready to plan when:** Owners know their roles, commitments and assumptions are understood, the team can start its planned work, key controls are in place, and unresolved blockers have owners and escalation dates.
 
@@ -55,6 +61,7 @@ The checks below are prompts, not universal approval gates. The Delivery Lead co
 - Run the agreed delivery and governance cadence; report progress against the baseline using evidence.
 - Track scope, milestones, forecast, capacity, quality, and client dependencies; make impacts visible early.
 - Keep risks, issues, assumptions, dependencies, decisions, and changes current with owners and target dates.
+- Review MME resource plans, aggregate Azure DevOps task hours, and HVLV submissions for the same period. Investigate missing or unplanned hours and record verified causes, owners, and actions; do not infer named-resource allocation from DevOps tasks.
 - Route scope or plan changes through the agreed approval process before treating them as committed work.
 - Coordinate build, reviews, testing, defect resolution, deployment planning, and stakeholder communications as applicable.
 - Escalate decisions and blockers at the level where they can be resolved; record outcomes and actions.

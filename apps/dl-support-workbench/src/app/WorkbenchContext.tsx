@@ -17,6 +17,7 @@ interface WorkbenchContextValue {
   reload: () => Promise<void>;
   createWorkItem: (input: WorkItemDraft) => Promise<WorkItem>;
   updateWorkItem: (id: string, input: WorkItemDraft) => Promise<WorkItem>;
+  deleteWorkItem: (id: string) => Promise<void>;
   saveEngagements: (input: EngagementWorkspace) => Promise<void>;
   saveProjectName: (name: string) => Promise<void>;
   savePreferences: (input: WorkbenchPreferences) => Promise<void>;
@@ -36,6 +37,7 @@ const blankData: WorkbenchData = {
   },
   items: [],
   financialGovernance: { asOf: null, mme: null, azureDevOps: null, hvlvReconciliation: null },
+  portfolio: { asOf: null, projects: [] },
 };
 
 const WorkbenchContext = createContext<WorkbenchContextValue | null>(null);
@@ -76,6 +78,11 @@ export function WorkbenchProvider({ children }: { children: ReactNode }) {
     return item;
   }
 
+  async function deleteWorkItem(id: string): Promise<void> {
+    await api.deleteWorkItem(id);
+    setData((current) => ({ ...current, items: current.items.filter((item) => item.id !== id) }));
+  }
+
   async function saveEngagements(input: EngagementWorkspace): Promise<void> {
     const engagements = await api.saveEngagements(input);
     setData((current) => ({ ...current, projectName: engagements.clientProjectName, engagements }));
@@ -107,6 +114,7 @@ export function WorkbenchProvider({ children }: { children: ReactNode }) {
       reload,
       createWorkItem,
       updateWorkItem,
+      deleteWorkItem,
       saveEngagements,
       saveProjectName,
       savePreferences,

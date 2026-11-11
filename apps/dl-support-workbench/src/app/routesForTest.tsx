@@ -4,6 +4,7 @@ import { ActionsPage } from '../features/ActionsPage';
 import { DashboardPage } from '../features/DashboardPage';
 import { EngagementsPage } from '../features/EngagementsPage';
 import { LifecyclePage } from '../features/LifecyclePage';
+import { PortfolioPage } from '../features/PortfolioPage';
 
 export function AppRoutes() {
   return (
@@ -12,6 +13,7 @@ export function AppRoutes() {
         <Route path="/" element={<DashboardPage />} />
         <Route path="/lifecycle" element={<LifecyclePage />} />
         <Route path="/engagements" element={<EngagementsPage />} />
+        <Route path="/portfolio" element={<PortfolioPage />} />
         <Route path="/actions" element={<ActionsPage />} />
       </Routes>
     </WorkbenchShell>

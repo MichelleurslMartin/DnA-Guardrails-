@@ -19,6 +19,8 @@ This directory contains Architecture Decision Records (ADRs) for the Agentic Adv
 | 0000 | [Using ADRs](template.md) | Accepted | 2025-06-10 | Template for architecture decisions |
 | 0001 | [Persist Workbench Records Through a Local PostgreSQL API](0001-local-postgresql-workbench-api.md) | Proposed | 2026-10-29 | Add a loopback Node.js API and PostgreSQL-compatible local persistence without seed data |
 | 0002 | [Offer Optional AI Variance Ideas Through Azure OpenAI](0002-optional-azure-openai-variance-ideas.md) | Proposed | 2026-11-09 | Generate anonymized, unverified prompts for DL review without exposing resource identity or comments |
+| 0003 | [Register Per-Project Source Links for Portfolio Navigation](0003-portfolio-project-source-links.md) | Proposed | 2026-11-11 | Store project-scoped source URLs and IDs as navigation references, separate from authenticated data connectors |
+| 0004 | [Scope Engagement Checks to Portfolio Projects](0004-project-scoped-engagement-checks.md) | Proposed | 2026-11-11 | Store manual AEP/BizApps checks and HVLV reason comments by project to prevent cross-project data leakage |
 
 ## ADR Statuses
 

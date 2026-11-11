@@ -100,18 +100,6 @@ export function WorkItemForm({ initialValue, onSave, submitLabel }: WorkItemForm
         <Field label="Evidence reference">
           <Input aria-label="Evidence reference" value={draft.evidence} onChange={(_, data) => update('evidence', data.value)} placeholder="Link or record reference" />
         </Field>
-        <Field label="Source tool">
-          <Input aria-label="Source tool" value={draft.sourceTool} onChange={(_, data) => update('sourceTool', data.value)} placeholder="For example, MME" />
-        </Field>
-          <Field label={draft.sourceTool.trim().toUpperCase() === 'MME' ? 'MME engagement link' : 'Source / engagement link'}>
-            <Input
-              aria-label={draft.sourceTool.trim().toUpperCase() === 'MME' ? 'MME engagement link' : 'Source / engagement link'}
-              type="url"
-              value={draft.sourceUrl}
-              onChange={(_, data) => update('sourceUrl', data.value)}
-              placeholder={draft.sourceTool.trim().toUpperCase() === 'MME' ? 'Paste the MME engagement URL' : 'https://...'}
-            />
-        </Field>
       </div>
       <Field label="Notes">
         <Textarea aria-label="Notes" rows={3} value={draft.notes} onChange={(_, data) => update('notes', data.value)} />

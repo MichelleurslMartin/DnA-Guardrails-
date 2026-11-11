@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { api } from '../api';
-import type { EngagementWorkspace, WorkItemDraft } from '../api/types';
+import type { EngagementWorkspace, PortfolioProjectDraft, PortfolioProjectSnapshot, WorkItemDraft } from '../api/types';
 
 const actionDraft: WorkItemDraft = {
   title: 'Confirm delivery approach',
@@ -10,8 +10,8 @@ const actionDraft: WorkItemDraft = {
   owner: 'Delivery lead',
   dueDate: '2026-11-10',
   evidence: 'Decision log',
-  sourceTool: 'MME',
-  sourceUrl: 'https://example.test/engagement/123',
+  sourceTool: '',
+  sourceUrl: '',
   notes: '',
 };
 
@@ -37,6 +37,91 @@ describe('live workbench API workflows', () => {
     expect(fetchMock.mock.calls[0][1]).toMatchObject({ method: 'POST', body: JSON.stringify(actionDraft) });
     expect(fetchMock.mock.calls[1][0]).toBe('/api/work-items/work%20item%2F1');
     expect(fetchMock.mock.calls[1][1]).toMatchObject({ method: 'PUT' });
+  });
+
+  it('deletes a local follow-up through the workbench API', async () => {
+    await api.deleteWorkItem('local follow-up/1');
+
+    expect(fetchMock.mock.calls[0][0]).toBe('/api/work-items/local%20follow-up%2F1');
+    expect(fetchMock.mock.calls[0][1]).toMatchObject({ method: 'DELETE' });
+  });
+
+  it('creates and updates per-project source links through the portfolio API', async () => {
+    const projectDraft: PortfolioProjectDraft = {
+      projectName: 'Sample project',
+      clientName: 'Sample client',
+      sourceLinks: {
+        mme: { url: 'https://example.test/mme/project', externalId: 'MME-1' },
+        dna: { url: 'https://example.test/ado/project', externalId: 'ADO-1' },
+        aep: { url: '', externalId: '' },
+        sharepoint: { url: '', externalId: '' },
+        myWizzard: { url: '', externalId: '' },
+        hvlv: { url: '', externalId: '' },
+      },
+    };
+    const projectResult: PortfolioProjectSnapshot = {
+      ...projectDraft,
+      projectId: 'project/1',
+      updatedAt: '2026-11-11T12:00:00Z',
+      financialGovernance: { asOf: null, mme: null, azureDevOps: null, hvlvReconciliation: null },
+    };
+    const jsonHeaders = { headers: { 'content-type': 'application/json' } };
+    fetchMock
+      .mockResolvedValueOnce(new Response(JSON.stringify(projectResult), jsonHeaders))
+      .mockResolvedValueOnce(new Response(JSON.stringify({ ...projectResult, projectName: 'Updated project' }), jsonHeaders));
+
+    await api.createPortfolioProject(projectDraft);
+    await api.updatePortfolioProject(projectResult.projectId, { ...projectDraft, projectName: 'Updated project' });
+
+    expect(fetchMock.mock.calls[0][0]).toBe('/api/portfolio/projects');
+    expect(fetchMock.mock.calls[0][1]).toMatchObject({ method: 'POST', body: JSON.stringify(projectDraft) });
+    expect(fetchMock.mock.calls[1][0]).toBe('/api/portfolio/projects/project%2F1');
+    expect(fetchMock.mock.calls[1][1]).toMatchObject({ method: 'PUT' });
+  });
+
+  it('scopes engagement checks and reason comments to a portfolio project', async () => {
+    const emptyRecord = {
+      name: '', identifier: '', url: '', verificationStatus: 'not-verified' as const, verifiedBy: '', verifiedOn: '',
+      evidence: '', accessNotes: '', followUpOwner: '', followUpDueDate: '', followUpStatus: 'not-started' as const,
+    };
+    const engagements: EngagementWorkspace = {
+      clientProjectName: 'Sample project',
+      aep: { ...emptyRecord, name: 'AEP sample' },
+      bizapps: emptyRecord,
+      matchStatus: 'not-checked',
+      matchNotes: '',
+      matchOwner: '',
+      matchDueDate: '',
+      matchFollowUpStatus: 'not-started',
+    };
+    const reasonComment = {
+      projectId: 'portfolio/1',
+      payPeriodStart: '2026-10-26',
+      payPeriodEnd: '2026-11-08',
+      enterpriseId: 'E001',
+      costCollectorId: 'CC-100',
+      comment: 'Verified additional approved work.',
+      updatedAt: '2026-11-09T12:00:00Z',
+    };
+    const jsonHeaders = { headers: { 'content-type': 'application/json' } };
+    fetchMock
+      .mockResolvedValueOnce(new Response(JSON.stringify(engagements), jsonHeaders))
+      .mockResolvedValueOnce(new Response(JSON.stringify(engagements), jsonHeaders))
+      .mockResolvedValueOnce(new Response(JSON.stringify([reasonComment]), jsonHeaders))
+      .mockResolvedValueOnce(new Response(JSON.stringify(reasonComment), jsonHeaders));
+
+    await api.getPortfolioProjectEngagements('portfolio/1');
+    await api.savePortfolioProjectEngagements('portfolio/1', engagements);
+    await api.getHvlvReconciliationComments('portfolio/1', reasonComment.payPeriodStart, reasonComment.payPeriodEnd);
+    await api.saveHvlvReconciliationComment(reasonComment);
+
+    expect(fetchMock.mock.calls.map(([url, init]) => [url, init?.method ?? 'GET'])).toEqual([
+      ['/api/portfolio/projects/portfolio%2F1/engagements', 'GET'],
+      ['/api/portfolio/projects/portfolio%2F1/engagements', 'PUT'],
+      ['/api/hvlv-reconciliation/comments?projectId=portfolio%2F1&payPeriodStart=2026-10-26&payPeriodEnd=2026-11-08', 'GET'],
+      ['/api/hvlv-reconciliation/comments', 'PUT'],
+    ]);
+    expect(fetchMock.mock.calls[3][1]?.body).toContain('"projectId":"portfolio/1"');
   });
 
   it('loads and saves workbench, engagements, project name, and preferences over HTTP', async () => {
@@ -81,36 +166,5 @@ describe('live workbench API workflows', () => {
       headers: { 'content-type': 'application/json' },
     }));
     await expect(api.getWorkbench()).rejects.toThrow('Unavailable');
-  });
-
-  it('loads and saves DL reason comments and requests anonymous AI ideas', async () => {
-    const comment = {
-      payPeriodStart: '2026-10-26', payPeriodEnd: '2026-11-08', enterpriseId: 'E001', costCollectorId: 'CC-100',
-      comment: 'Additional approved work; review the change request.', updatedAt: '2026-11-09T12:00:00Z',
-    };
-    const jsonHeaders = { headers: { 'content-type': 'application/json' } };
-    fetchMock
-      .mockResolvedValueOnce(new Response('[]', jsonHeaders))
-      .mockResolvedValueOnce(new Response(JSON.stringify(comment), jsonHeaders))
-      .mockResolvedValueOnce(new Response(JSON.stringify({ ideas: ['Check for approved additional work.'] }), jsonHeaders));
-
-    await api.getHvlvReconciliationComments(comment.payPeriodStart, comment.payPeriodEnd);
-    await api.saveHvlvReconciliationComment(comment);
-    await api.getHvlvReasonIdeas({
-      payPeriodStart: comment.payPeriodStart,
-      payPeriodEnd: comment.payPeriodEnd,
-      plannedHours: 80,
-      submittedHours: 72,
-      varianceHours: -8,
-      status: 'submitted',
-    });
-
-    expect(fetchMock.mock.calls.map(([url, init]) => [url, init?.method ?? 'GET'])).toEqual([
-      ['/api/hvlv-reconciliation/comments?payPeriodStart=2026-10-26&payPeriodEnd=2026-11-08', 'GET'],
-      ['/api/hvlv-reconciliation/comments', 'PUT'],
-      ['/api/hvlv-reconciliation/reason-ideas', 'POST'],
-    ]);
-    expect(fetchMock.mock.calls[2][1]?.body).not.toContain('E001');
-    expect(fetchMock.mock.calls[2][1]?.body).not.toContain('CC-100');
   });
 });

@@ -1,4 +1,4 @@
-import type { ApiClient, EngagementWorkspace, HvlvReasonComment, HvlvReasonCommentInput, HvlvReasonIdeaRequest, WorkbenchData, WorkbenchPreferences, WorkItem, WorkItemDraft } from './types';
+import type { ApiClient, EngagementWorkspace, HvlvReasonComment, HvlvReasonCommentInput, HvlvReasonIdeaRequest, PortfolioProjectDraft, PortfolioProjectSnapshot, WorkbenchData, WorkbenchPreferences, WorkItem, WorkItemDraft } from './types';
 
 const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL ?? '/api').replace(/\/$/, '');
 
@@ -33,6 +33,11 @@ export const liveClient: ApiClient = {
     method: 'PUT',
     body: jsonBody(updates),
   }),
+  deleteWorkItem: (id: string) => request<void>(`/work-items/${encodeURIComponent(id)}`, { method: 'DELETE' }),
+  createPortfolioProject: (input: PortfolioProjectDraft) => request<PortfolioProjectSnapshot>('/portfolio/projects', { method: 'POST', body: jsonBody(input) }),
+  updatePortfolioProject: (projectId: string, input: PortfolioProjectDraft) => request<PortfolioProjectSnapshot>(`/portfolio/projects/${encodeURIComponent(projectId)}`, { method: 'PUT', body: jsonBody(input) }),
+  getPortfolioProjectEngagements: (projectId: string) => request<EngagementWorkspace>(`/portfolio/projects/${encodeURIComponent(projectId)}/engagements`),
+  savePortfolioProjectEngagements: (projectId: string, input: EngagementWorkspace) => request<EngagementWorkspace>(`/portfolio/projects/${encodeURIComponent(projectId)}/engagements`, { method: 'PUT', body: jsonBody(input) }),
   saveEngagements: (input: EngagementWorkspace) => request<EngagementWorkspace>('/engagements', {
     method: 'PUT',
     body: jsonBody(input),
@@ -43,8 +48,8 @@ export const liveClient: ApiClient = {
     method: 'PUT',
     body: jsonBody(input),
   }),
-  getHvlvReconciliationComments: (payPeriodStart: string, payPeriodEnd: string) => request<HvlvReasonComment[]>(
-    `/hvlv-reconciliation/comments?payPeriodStart=${encodeURIComponent(payPeriodStart)}&payPeriodEnd=${encodeURIComponent(payPeriodEnd)}`,
+  getHvlvReconciliationComments: (projectId: string, payPeriodStart: string, payPeriodEnd: string) => request<HvlvReasonComment[]>(
+    `/hvlv-reconciliation/comments?projectId=${encodeURIComponent(projectId)}&payPeriodStart=${encodeURIComponent(payPeriodStart)}&payPeriodEnd=${encodeURIComponent(payPeriodEnd)}`,
   ),
   saveHvlvReconciliationComment: (input: HvlvReasonCommentInput) => request<HvlvReasonComment>('/hvlv-reconciliation/comments', {
     method: 'PUT',

@@ -51,6 +51,23 @@
 .appRoot :global(.section-heading h2) { display: flex; align-items: center; gap: 8px; margin: 0; color: var(--app-text); font-size: 16px; font-weight: 650; }
 .appRoot :global(.section-heading > span) { color: var(--app-muted); font-size: 12px; }
 .appRoot :global(.section-heading .fui-Badge) { flex-shrink: 0; }
+.appRoot :global(.stakeholder-guidance-intro) { max-width: 88ch; margin: 0; color: var(--app-muted); }
+.appRoot :global(.stakeholder-guidance-list) { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 20px; margin: 0; padding: 0; list-style: none; border-top: 1px solid var(--app-border); }
+.appRoot :global(.stakeholder-guidance-list li) { display: flex; min-width: 0; flex-direction: column; gap: 5px; padding: 12px 0; border-bottom: 1px solid var(--app-border); }
+.appRoot :global(.stakeholder-guidance-list strong) { color: var(--app-text); font-size: 13px; }
+.appRoot :global(.stakeholder-guidance-list p) { margin: 0; color: var(--app-muted); font-size: 12px; }
+.appRoot :global(.stakeholder-guidance-list span) { color: #2D766D; font-size: 11px; }
+.appRoot :global(.lifecycle-guidance-list) { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 20px; margin: 0; padding: 0; list-style: none; border-top: 1px solid var(--app-border); }
+.appRoot :global(.lifecycle-guidance-list li) { min-width: 0; border-bottom: 1px solid var(--app-border); }
+.appRoot :global(.lifecycle-guidance-item summary) { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; padding: 12px 0; cursor: pointer; list-style: none; }
+.appRoot :global(.lifecycle-guidance-item summary::-webkit-details-marker) { display: none; }
+.appRoot :global(.lifecycle-guidance-item summary > span:first-child) { display: flex; min-width: 0; flex-direction: column; gap: 4px; }
+.appRoot :global(.lifecycle-guidance-item summary strong) { color: var(--app-text); font-size: 13px; }
+.appRoot :global(.lifecycle-guidance-item summary small) { color: var(--app-muted); font-size: 11px; }
+.appRoot :global(.guidance-disclosure-label) { flex-shrink: 0; color: #2D766D; font-size: 12px; font-weight: 650; }
+.appRoot :global(.guidance-detail-grid) { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; padding: 0 0 14px; }
+.appRoot :global(.guidance-detail-grid h3) { margin: 0 0 4px; color: var(--app-text); font-size: 12px; }
+.appRoot :global(.guidance-detail-grid p) { margin: 0; color: var(--app-muted); font-size: 12px; }
 .appRoot :global(.stage-grid) { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
 .appRoot :global(.stage-card) { display: flex; min-height: 92px; flex-direction: column; gap: 6px; padding: 12px; border-radius: 5px; background: var(--app-surface); transition: transform 180ms ease, box-shadow 180ms ease; }
 .appRoot :global(.stage-card:hover), .appRoot :global(.guidance-card:hover) { transform: translateY(-1px); box-shadow: 0 5px 12px rgb(20 43 38 / 9%); }
@@ -80,13 +97,22 @@
 .appRoot :global(.form-error) { margin: 0; color: #B23C40; font-size: 13px; }
 .appRoot :global(.form-success) { margin: 0; color: #237A58; font-size: 13px; }
 .appRoot :global(.engagement-grid) { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; gap: 12px; }
+.appRoot :global(.project-engagement-tabs) { overflow-x: auto; }
+.appRoot :global(.project-engagement-tabs [role="tab"]) { flex: 0 0 auto; white-space: nowrap; }
+.appRoot :global(.portfolio-project-context) { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px 20px; padding: 10px 0; border-top: 1px solid var(--app-border); border-bottom: 1px solid var(--app-border); }
+.appRoot :global(.portfolio-project-context > div:first-child) { display: flex; flex-direction: column; gap: 4px; }
+.appRoot :global(.portfolio-project-context > div:first-child > span) { color: var(--app-muted); font-size: 12px; }
+.appRoot :global(.portfolio-project-context > a) { color: #2D766D; font-size: 12px; font-weight: 650; }
 .appRoot :global(.governance-sources) { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.appRoot :global(.governance-sources-two) { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .appRoot :global(.governance-sources > div) { display: flex; min-width: 0; flex-wrap: wrap; align-items: center; gap: 8px 12px; padding: 10px 0; border-top: 1px solid var(--app-border); border-bottom: 1px solid var(--app-border); }
 .appRoot :global(.governance-sources > div > strong) { margin-right: auto; }
 .appRoot :global(.governance-sources > div > span) { color: var(--app-muted); font-size: 12px; }
 .appRoot :global(.governance-sources a) { color: #2D766D; font-size: 12px; font-weight: 600; }
 .appRoot :global(.governance-empty) { display: flex; flex-direction: column; gap: 6px; padding: 16px; border-left: 3px solid #2D766D; background: var(--app-surface); }
 .appRoot :global(.governance-empty p) { margin: 0; color: var(--app-muted); }
+.appRoot :global(.sample-preview-notice) { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 16px; padding: 9px 12px; border: 1px solid #D5BD79; border-radius: 4px; color: #573C00; background: #FFF2CF; font-size: 12px; font-weight: 650; }
+.appRoot :global(.sample-preview-notice a), .appRoot :global(.governance-empty a) { color: #573C00; font-weight: 700; text-decoration: underline; }
 .appRoot :global(.governance-progress-grid) { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
 .appRoot :global(.governance-reconciliation-metrics) { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 .appRoot :global(.governance-progress-grid .metric-card) { gap: 8px; }
@@ -102,6 +128,30 @@
 .appRoot :global(.governance-table th), .appRoot :global(.governance-table td) { padding: 8px 10px; border-top: 1px solid var(--app-border); }
 .appRoot :global(.governance-table th) { color: var(--app-muted); font-size: 11px; text-transform: uppercase; }
 .appRoot :global(.governance-table td:nth-child(n + 2)) { font-variant-numeric: tabular-nums; }
+.appRoot :global(.portfolio-summary) { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.appRoot :global(.portfolio-table) { min-width: 1500px; }
+.appRoot :global(.portfolio-project-cell) { display: flex; min-width: 180px; flex-direction: column; gap: 4px; }
+.appRoot :global(.portfolio-project-cell > strong) { color: var(--app-text); }
+.appRoot :global(.portfolio-project-cell > span), .appRoot :global(.portfolio-signal-note) { color: var(--app-muted); font-size: 11px; }
+.appRoot :global(.portfolio-project-cell > small) { color: var(--app-muted); font-size: 10px; }
+.appRoot :global(.portfolio-links) { display: flex; flex-wrap: wrap; gap: 8px; }
+.appRoot :global(.portfolio-project-links) { display: flex; min-width: 190px; flex-direction: column; gap: 4px; font-size: 11px; }
+.appRoot :global(.portfolio-project-links > div) { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 8px; }
+.appRoot :global(.portfolio-project-links a) { color: #2D766D; font-weight: 650; }
+.appRoot :global(.portfolio-project-links span), .appRoot :global(.portfolio-project-links small) { color: var(--app-muted); }
+.appRoot :global(.portfolio-project-links > small) { padding-top: 3px; }
+.appRoot :global(.portfolio-project-form) { display: flex; flex-direction: column; gap: 14px; }
+.appRoot :global(.portfolio-source-grid) { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 20px; }
+.appRoot :global(.portfolio-source-group) { display: flex; min-width: 0; flex-direction: column; gap: 10px; padding: 12px 0; border-top: 1px solid var(--app-border); }
+.appRoot :global(.portfolio-source-group h3) { margin: 0; color: var(--app-text); font-size: 14px; }
+.appRoot :global(.portfolio-source-group > span) { color: var(--app-muted); font-size: 11px; }
+.appRoot :global(.portfolio-project-links) { display: flex; min-width: 190px; flex-direction: column; gap: 4px; font-size: 11px; }
+.appRoot :global(.portfolio-project-links > div) { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 8px; }
+.appRoot :global(.portfolio-project-links a) { color: #2D766D; font-weight: 650; }
+.appRoot :global(.portfolio-project-links span), .appRoot :global(.portfolio-project-links small) { color: var(--app-muted); }
+.appRoot :global(.portfolio-project-links > small) { padding-top: 3px; }
+.appRoot :global(.portfolio-progress-cell) { display: flex; min-width: 150px; flex-direction: column; gap: 3px; white-space: nowrap; }
+.appRoot :global(.portfolio-signal-note) { display: block; margin-top: 4px; }
 .appRoot :global(.resource-reconciliation-table) { min-width: 1780px; }
 .appRoot :global(.resource-reconciliation-table td) { vertical-align: top; }
 .appRoot :global(.reason-comment-cell) { min-width: 520px; max-width: 620px; white-space: normal; }
@@ -168,8 +218,12 @@
   .appRoot :global(.app-main) { padding: 16px 12px 88px; }
   .appRoot :global(.hero-panel) { min-height: 0; padding: 22px 18px; }
   .appRoot :global(.hero-panel h1) { font-size: 25px; }
-  .appRoot :global(.metric-grid) { grid-template-columns: 1fr; }
+  .appRoot :global(.metric-grid), .appRoot :global(.portfolio-summary) { grid-template-columns: 1fr; }
   .appRoot :global(.stage-grid), .appRoot :global(.guidance-grid), .appRoot :global(.engagement-grid) { grid-template-columns: 1fr; }
+  .appRoot :global(.portfolio-project-context) { align-items: flex-start; flex-direction: column; }
+  .appRoot :global(.stakeholder-guidance-list) { grid-template-columns: 1fr; }
+  .appRoot :global(.portfolio-source-grid) { grid-template-columns: 1fr; }
+  .appRoot :global(.lifecycle-guidance-list), .appRoot :global(.guidance-detail-grid) { grid-template-columns: 1fr; }
   .appRoot :global(.governance-sources), .appRoot :global(.governance-progress-grid) { grid-template-columns: 1fr; }
   .appRoot :global(.recommended-actions) { grid-template-columns: 1fr; }
   .appRoot :global(.form-grid), .appRoot :global(.form-grid-two), .appRoot :global(.form-grid-three) { grid-template-columns: 1fr; }

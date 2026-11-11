@@ -54,6 +54,27 @@ interface EngagementWorkspace {
   matchFollowUpStatus: 'not-started' | 'in-progress' | 'waiting' | 'complete';
 }
 
+interface ProjectSourceLink {
+  url: string;
+  externalId: string;
+}
+
+type PortfolioSourceLinks = Record<'mme' | 'dna' | 'aep' | 'sharepoint' | 'myWizzard' | 'hvlv', ProjectSourceLink>;
+
+interface PortfolioProjectDraft {
+  projectName: string;
+  clientName: string;
+  sourceLinks: PortfolioSourceLinks;
+}
+
+interface PortfolioProjectRow {
+  project_id: string;
+  project_name: string;
+  client_name: string;
+  source_links: PortfolioSourceLinks;
+  updated_at: string;
+}
+
 interface WorkbenchPreferences {
   theme: ThemePreference;
 }
@@ -75,6 +96,7 @@ interface WorkItemRow {
 }
 
 interface ReasonCommentInput {
+  projectId: string;
   payPeriodStart: string;
   payPeriodEnd: string;
   enterpriseId: string;
@@ -83,6 +105,7 @@ interface ReasonCommentInput {
 }
 
 interface ReasonCommentRow {
+  project_id: string;
   pay_period_start: string;
   pay_period_end: string;
   enterprise_id: string;
@@ -105,6 +128,59 @@ function assertString(value: unknown, field: string): asserts value is string {
   if (typeof value !== 'string') throw new HttpError(400, `${field} must be a string.`);
 }
 
+const portfolioSourceKeys = ['mme', 'dna', 'aep', 'sharepoint', 'myWizzard', 'hvlv'] as const;
+
+function parsePortfolioProject(value: unknown): PortfolioProjectDraft {
+  if (!isRecord(value) || !isRecord(value.sourceLinks)) throw new HttpError(400, 'A project with sourceLinks is required.');
+  assertString(value.projectName, 'projectName');
+  assertString(value.clientName, 'clientName');
+  if (!value.projectName.trim() || value.projectName.length > 200) throw new HttpError(400, 'projectName must be between 1 and 200 characters.');
+  if (value.clientName.length > 200) throw new HttpError(400, 'clientName must not exceed 200 characters.');
+
+  const sourceLinks = {} as PortfolioSourceLinks;
+  for (const source of portfolioSourceKeys) {
+    const linkValue = value.sourceLinks[source];
+    if (!isRecord(linkValue)) throw new HttpError(400, `sourceLinks.${source} must include a URL and external ID.`);
+    const { url, externalId } = linkValue;
+    assertString(url, `sourceLinks.${source}.url`);
+    assertString(externalId, `sourceLinks.${source}.externalId`);
+    if (url.length > 2000 || externalId.length > 400) throw new HttpError(400, `sourceLinks.${source} is too long.`);
+    if (url.trim()) {
+      try {
+        const parsed = new URL(url);
+        if (parsed.protocol !== 'https:' || parsed.username || parsed.password) throw new Error('URL must be HTTPS and must not contain credentials.');
+        if ([...parsed.searchParams.keys()].some((key) => /^(access_token|token|api_key|key|secret|code|authorization|session)$/i.test(key))) {
+          throw new Error('URL must not contain credentials or tokens.');
+        }
+      } catch {
+        throw new HttpError(400, `sourceLinks.${source}.url must be a safe HTTPS URL without credentials or token parameters.`);
+      }
+    }
+    sourceLinks[source] = { url: url.trim(), externalId: externalId.trim() };
+  }
+
+  return { projectName: value.projectName.trim(), clientName: value.clientName.trim(), sourceLinks };
+}
+
+function portfolioProjectFromRow(row: PortfolioProjectRow) {
+  return {
+    projectId: row.project_id,
+    projectName: row.project_name,
+    clientName: row.client_name,
+    sourceLinks: row.source_links,
+    updatedAt: row.updated_at,
+    financialGovernance: { asOf: null, mme: null, azureDevOps: null, hvlvReconciliation: null },
+  };
+}
+
+async function getPortfolioProjects(database: Database): Promise<PortfolioProjectRow[]> {
+  const { rows } = await database.query<PortfolioProjectRow>(
+    `SELECT project_id, project_name, client_name, source_links, updated_at::text
+     FROM portfolio_projects ORDER BY project_name, project_id`,
+  );
+  return rows;
+}
+
 function assertIsoDate(value: unknown, field: string): asserts value is string {
   assertString(value, field);
   const date = new Date(`${value}T00:00:00.000Z`);
@@ -115,18 +191,20 @@ function assertIsoDate(value: unknown, field: string): asserts value is string {
 
 function parseReasonComment(value: unknown): ReasonCommentInput {
   if (!isRecord(value)) throw new HttpError(400, 'A reason comment object is required.');
-  const { payPeriodStart, payPeriodEnd, enterpriseId, costCollectorId, comment } = value;
+  const { projectId: projectIdValue = '', payPeriodStart, payPeriodEnd, enterpriseId, costCollectorId, comment } = value;
+  assertString(projectIdValue, 'projectId');
   assertIsoDate(payPeriodStart, 'payPeriodStart');
   assertIsoDate(payPeriodEnd, 'payPeriodEnd');
   assertString(enterpriseId, 'enterpriseId');
   assertString(costCollectorId, 'costCollectorId');
   assertString(comment, 'comment');
   if (payPeriodEnd < payPeriodStart) throw new HttpError(400, 'payPeriodEnd must not be before payPeriodStart.');
+  if (projectIdValue.length > 200) throw new HttpError(400, 'projectId must not exceed 200 characters.');
   if (!enterpriseId.trim() || enterpriseId.length > 200) throw new HttpError(400, 'enterpriseId must be between 1 and 200 characters.');
   if (costCollectorId.length > 200) throw new HttpError(400, 'costCollectorId must not exceed 200 characters.');
   if (!comment.trim()) throw new HttpError(400, 'comment cannot be empty.');
   if (comment.length > 4000) throw new HttpError(400, 'comment must not exceed 4000 characters.');
-  return { payPeriodStart, payPeriodEnd, enterpriseId: enterpriseId.trim(), costCollectorId: costCollectorId.trim(), comment: comment.trim() };
+  return { projectId: projectIdValue.trim(), payPeriodStart, payPeriodEnd, enterpriseId: enterpriseId.trim(), costCollectorId: costCollectorId.trim(), comment: comment.trim() };
 }
 
 function parseReasonIdeaRequest(value: unknown): ReasonIdeaRequest {
@@ -152,6 +230,7 @@ function parseReasonIdeaRequest(value: unknown): ReasonIdeaRequest {
 
 function reasonCommentFromRow(row: ReasonCommentRow) {
   return {
+    projectId: row.project_id,
     payPeriodStart: row.pay_period_start,
     payPeriodEnd: row.pay_period_end,
     enterpriseId: row.enterprise_id,
@@ -273,6 +352,36 @@ async function putEngagements(database: Database, engagements: EngagementWorkspa
   );
 }
 
+async function getPortfolioProjectEngagements(database: Database, projectId: string): Promise<EngagementWorkspace> {
+  const project = await database.query<{ project_name: string; client_name: string }>(
+    'SELECT project_name, client_name FROM portfolio_projects WHERE project_id = $1',
+    [projectId],
+  );
+  if (!project.rows[0]) throw new HttpError(404, 'This portfolio project does not exist.');
+
+  const { rows } = await database.query<{ data: EngagementWorkspace }>(
+    'SELECT data FROM portfolio_project_engagements WHERE project_id = $1',
+    [projectId],
+  );
+  return rows[0]?.data ?? {
+    ...emptyEngagements(),
+    clientProjectName: project.rows[0].client_name || project.rows[0].project_name,
+  };
+}
+
+async function putPortfolioProjectEngagements(database: Database, projectId: string, engagements: EngagementWorkspace): Promise<void> {
+  const project = await database.query<{ project_id: string }>(
+    'SELECT project_id FROM portfolio_projects WHERE project_id = $1',
+    [projectId],
+  );
+  if (!project.rows[0]) throw new HttpError(404, 'This portfolio project does not exist.');
+  await database.query(
+    `INSERT INTO portfolio_project_engagements (project_id, data) VALUES ($1, $2::jsonb)
+     ON CONFLICT (project_id) DO UPDATE SET data = EXCLUDED.data, updated_at = now()`,
+    [projectId, JSON.stringify(engagements)],
+  );
+}
+
 async function handleRequest(request: IncomingMessage, response: ServerResponse, database: Database): Promise<void> {
   const url = new URL(request.url ?? '/', 'http://localhost');
   const path = url.pathname;
@@ -284,17 +393,19 @@ async function handleRequest(request: IncomingMessage, response: ServerResponse,
   }
 
   if (method === 'GET' && path === '/api/hvlv-reconciliation/comments') {
+    const projectId = url.searchParams.get('projectId') ?? '';
+    if (projectId.length > 200) throw new HttpError(400, 'projectId must not exceed 200 characters.');
     const payPeriodStart = url.searchParams.get('payPeriodStart');
     const payPeriodEnd = url.searchParams.get('payPeriodEnd');
     assertIsoDate(payPeriodStart, 'payPeriodStart');
     assertIsoDate(payPeriodEnd, 'payPeriodEnd');
     if (payPeriodEnd < payPeriodStart) throw new HttpError(400, 'payPeriodEnd must not be before payPeriodStart.');
     const { rows } = await database.query<ReasonCommentRow>(
-      `SELECT pay_period_start::text, pay_period_end::text, enterprise_id, cost_collector_id, comment, updated_at::text
+      `SELECT project_id, pay_period_start::text, pay_period_end::text, enterprise_id, cost_collector_id, comment, updated_at::text
        FROM hvlv_reconciliation_comments
-       WHERE pay_period_start = $1::date AND pay_period_end = $2::date
+       WHERE project_id = $1 AND pay_period_start = $2::date AND pay_period_end = $3::date
        ORDER BY enterprise_id, cost_collector_id`,
-      [payPeriodStart, payPeriodEnd],
+      [projectId, payPeriodStart, payPeriodEnd],
     );
     sendJson(response, 200, rows.map(reasonCommentFromRow));
     return;
@@ -303,12 +414,12 @@ async function handleRequest(request: IncomingMessage, response: ServerResponse,
   if (method === 'PUT' && path === '/api/hvlv-reconciliation/comments') {
     const input = parseReasonComment(await readJson(request));
     const { rows } = await database.query<ReasonCommentRow>(
-      `INSERT INTO hvlv_reconciliation_comments (pay_period_start, pay_period_end, enterprise_id, cost_collector_id, comment)
-       VALUES ($1::date, $2::date, $3, $4, $5)
-       ON CONFLICT (pay_period_start, pay_period_end, enterprise_id, cost_collector_id)
+      `INSERT INTO hvlv_reconciliation_comments (project_id, pay_period_start, pay_period_end, enterprise_id, cost_collector_id, comment)
+       VALUES ($1, $2::date, $3::date, $4, $5, $6)
+       ON CONFLICT (project_id, pay_period_start, pay_period_end, enterprise_id, cost_collector_id)
        DO UPDATE SET comment = EXCLUDED.comment, updated_at = now()
-       RETURNING pay_period_start::text, pay_period_end::text, enterprise_id, cost_collector_id, comment, updated_at::text`,
-      [input.payPeriodStart, input.payPeriodEnd, input.enterpriseId, input.costCollectorId, input.comment],
+       RETURNING project_id, pay_period_start::text, pay_period_end::text, enterprise_id, cost_collector_id, comment, updated_at::text`,
+      [input.projectId, input.payPeriodStart, input.payPeriodEnd, input.enterpriseId, input.costCollectorId, input.comment],
     );
     sendJson(response, 200, reasonCommentFromRow(rows[0]));
     return;
@@ -327,16 +438,67 @@ async function handleRequest(request: IncomingMessage, response: ServerResponse,
     return;
   }
 
+  if (method === 'GET' && path === '/api/portfolio/projects') {
+    const projects = await getPortfolioProjects(database);
+    sendJson(response, 200, projects.map(portfolioProjectFromRow));
+    return;
+  }
+
+  if (method === 'POST' && path === '/api/portfolio/projects') {
+    const input = parsePortfolioProject(await readJson(request));
+    const projectId = randomUUID();
+    const { rows } = await database.query<PortfolioProjectRow>(
+      `INSERT INTO portfolio_projects (project_id, project_name, client_name, source_links)
+       VALUES ($1, $2, $3, $4::jsonb)
+       RETURNING project_id, project_name, client_name, source_links, updated_at::text`,
+      [projectId, input.projectName, input.clientName, JSON.stringify(input.sourceLinks)],
+    );
+    sendJson(response, 201, portfolioProjectFromRow(rows[0]));
+    return;
+  }
+
+  const projectEngagementsMatch = path.match(/^\/api\/portfolio\/projects\/([^/]+)\/engagements$/);
+  if (method === 'GET' && projectEngagementsMatch) {
+    const projectId = decodeURIComponent(projectEngagementsMatch[1]);
+    sendJson(response, 200, await getPortfolioProjectEngagements(database, projectId));
+    return;
+  }
+
+  if (method === 'PUT' && projectEngagementsMatch) {
+    const projectId = decodeURIComponent(projectEngagementsMatch[1]);
+    const engagements = parseEngagements(await readJson(request));
+    await putPortfolioProjectEngagements(database, projectId, engagements);
+    sendJson(response, 200, engagements);
+    return;
+  }
+
+  const portfolioProjectMatch = path.match(/^\/api\/portfolio\/projects\/([^/]+)$/);
+  if (method === 'PUT' && portfolioProjectMatch) {
+    const projectId = decodeURIComponent(portfolioProjectMatch[1]);
+    const input = parsePortfolioProject(await readJson(request));
+    const { rows } = await database.query<PortfolioProjectRow>(
+      `UPDATE portfolio_projects SET project_name = $2, client_name = $3, source_links = $4::jsonb, updated_at = now()
+       WHERE project_id = $1
+       RETURNING project_id, project_name, client_name, source_links, updated_at::text`,
+      [projectId, input.projectName, input.clientName, JSON.stringify(input.sourceLinks)],
+    );
+    if (!rows[0]) throw new HttpError(404, 'This portfolio project does not exist.');
+    sendJson(response, 200, portfolioProjectFromRow(rows[0]));
+    return;
+  }
+
   if (method === 'GET' && path === '/api/workbench') {
-    const [engagements, items] = await Promise.all([
+    const [engagements, items, portfolioProjects] = await Promise.all([
       getEngagements(database),
       database.query<WorkItemRow>('SELECT * FROM work_items ORDER BY created_at DESC, id'),
+      getPortfolioProjects(database),
     ]);
     sendJson(response, 200, {
       projectName: engagements.clientProjectName,
       engagements,
       items: items.rows.map(workItemFromRow),
       financialGovernance: { asOf: null, mme: null, azureDevOps: null, hvlvReconciliation: null },
+      portfolio: { asOf: null, projects: portfolioProjects.map(portfolioProjectFromRow) },
     });
     return;
   }
@@ -377,6 +539,17 @@ async function handleRequest(request: IncomingMessage, response: ServerResponse,
   }
 
   const workItemMatch = path.match(/^\/api\/work-items\/([^/]+)$/);
+  if (method === 'DELETE' && workItemMatch) {
+    const id = decodeURIComponent(workItemMatch[1]);
+    const { rows } = await database.query<{ id: string }>(
+      'DELETE FROM work_items WHERE id = $1 RETURNING id',
+      [id],
+    );
+    if (!rows[0]) throw new HttpError(404, 'This work item does not exist in the workbench.');
+    sendJson(response, 200, { id: rows[0].id });
+    return;
+  }
+
   if (method === 'PUT' && workItemMatch) {
     const id = decodeURIComponent(workItemMatch[1]);
     const draft = parseWorkItemDraft(await readJson(request));

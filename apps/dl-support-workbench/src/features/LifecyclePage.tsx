@@ -13,100 +13,31 @@ import { LIFECYCLE_STAGES, type LifecycleStage, type WorkItem, type WorkItemDraf
 import { DataState } from '../components/States';
 import { WorkItemForm } from '../components/WorkItemForm';
 import { WorkItemTable } from '../components/WorkItemTable';
-
-const mobilizeActions = [
-  {
-    title: 'Review contract and statement of work',
-    description: 'Check assumptions, scope, deliverables, acceptance terms, and constraints.',
-    evidence: 'Contract and assumption review',
-    sourceTool: '',
-  },
-  {
-    title: 'Confirm team roles, governance, and escalation routes',
-    description: 'Identify the sponsor, client and delivery leads, decision owners, and team responsibilities.',
-    evidence: 'Team and governance map',
-    sourceTool: '',
-  },
-  {
-    title: 'Verify AEP and BizApps Platform DnA engagement records',
-    description: 'Match both records to the approved project; assign missing, inaccessible, or mismatched records for follow-up.',
-    evidence: 'Verified engagement links or IDs',
-    sourceTool: 'AEP / BizApps Platform',
-  },
-  {
-    title: 'Align delivery approach, environments, tools, and access',
-    description: 'Confirm the implementation model, working environments, tools, and required access.',
-    evidence: 'Access and environment actions',
-    sourceTool: '',
-  },
-  {
-    title: 'Establish initial plan, milestones, and financial baseline',
-    description: 'Set the initial plan, budget and forecast, delivery cadence, and reporting approach.',
-    evidence: 'Initial plan and financial baseline',
-    sourceTool: 'MME',
-  },
-  {
-    title: 'Start RAID, decision, and change logs',
-    description: 'Create the initial risk, assumption, issue, dependency, decision, and change records.',
-    evidence: 'RAID, decision, and change logs',
-    sourceTool: '',
-  },
-  {
-    title: 'Identify onboarding, security, privacy, quality, and compliance activities',
-    description: 'Determine which project controls apply and record owners for the required work.',
-    evidence: 'Applicable control activities and owners',
-    sourceTool: '',
-  },
-] as const;
+import { LIFECYCLE_GUIDANCE } from './lifecycleGuidance';
 
 export function LifecyclePage() {
-  const { data, state, error, reload, createWorkItem, updateWorkItem } = useWorkbench();
+  const { data, state, error, reload, createWorkItem, updateWorkItem, deleteWorkItem } = useWorkbench();
   const [selectedStage, setSelectedStage] = useState<LifecycleStage>('Mobilize');
   const [adding, setAdding] = useState(false);
-  const [editingItem, setEditingItem] = useState<WorkItem | null>(null);
-  const [addingSuggestion, setAddingSuggestion] = useState<string | null>(null);
-  const [suggestionError, setSuggestionError] = useState<string | null>(null);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
   const stageItems = data.items.filter((item) => item.stage === selectedStage);
-  const completed = stageItems.filter((item) => item.status === 'complete').length;
-  const nextItem = stageItems.find((item) => item.status !== 'complete');
-  const availableMobilizeActions = selectedStage === 'Mobilize'
-    ? mobilizeActions.filter((action) => !stageItems.some((item) => item.title.toLowerCase() === action.title.toLowerCase()))
-    : [];
+  const guidanceItems = LIFECYCLE_GUIDANCE[selectedStage];
 
   async function updateStatus(item: WorkItem, status: WorkItemStatus): Promise<void> {
     await updateWorkItem(item.id, { ...item, status });
   }
 
-  async function saveItem(draft: WorkItemDraft): Promise<void> {
-    if (editingItem) {
-      await updateWorkItem(editingItem.id, draft);
-      setEditingItem(null);
-    } else {
-      await createWorkItem({ ...draft, category: 'checklist', stage: selectedStage });
-    }
+  async function addItem(draft: WorkItemDraft): Promise<void> {
+    await createWorkItem({ ...draft, category: 'action', stage: selectedStage });
     setAdding(false);
   }
 
-  async function addMobilizeAction(action: (typeof mobilizeActions)[number]): Promise<void> {
-    setAddingSuggestion(action.title);
-    setSuggestionError(null);
+  async function deleteLocalFollowUp(item: WorkItem): Promise<void> {
+    setDeleteError(null);
     try {
-      await createWorkItem({
-        title: action.title,
-        category: 'checklist',
-        stage: 'Mobilize',
-        status: 'not-started',
-        owner: '',
-        dueDate: '',
-        evidence: action.evidence,
-        sourceTool: action.sourceTool,
-        sourceUrl: '',
-        notes: action.description,
-      });
+      await deleteWorkItem(item.id);
     } catch (cause) {
-      setSuggestionError(cause instanceof Error ? cause.message : 'The suggested action could not be added.');
-    } finally {
-      setAddingSuggestion(null);
+      setDeleteError(cause instanceof Error ? cause.message : 'The local follow-up could not be deleted.');
     }
   }
 
@@ -118,10 +49,10 @@ export function LifecyclePage() {
         <span className="quiet-label">Manual guidance · no platform connection</span>
       </section>
 
-      <section className="metric-grid lifecycle-metrics" aria-label="Lifecycle progress">
+      <section className="metric-grid lifecycle-metrics" aria-label="Lifecycle guidance">
         <Card className="metric-card" appearance="outline"><span className="metric-label">Current stage</span><strong className="metric-value metric-value-text">{selectedStage}</strong><span className="metric-note">Stage {LIFECYCLE_STAGES.indexOf(selectedStage) + 1} of 6</span></Card>
-        <Card className="metric-card" appearance="outline"><span className="metric-label">Stage actions</span><strong className="metric-value metric-value-text">{completed} of {stageItems.length} complete</strong><span className="metric-note">Status is stored by the workbench service</span></Card>
-        <Card className="metric-card" appearance="outline"><span className="metric-label">Next step</span><strong className="metric-value metric-value-text">{nextItem?.title ?? 'No open item'}</strong><span className="metric-note">{nextItem?.evidence || 'Add evidence as work progresses'}</span></Card>
+        <Card className="metric-card" appearance="outline"><span className="metric-label">Guidance topics</span><strong className="metric-value metric-value-text">{guidanceItems.length}</strong><span className="metric-note">How-to and pitfalls; no phase completion is recorded here</span></Card>
+        <Card className="metric-card" appearance="outline"><span className="metric-label">Next topic</span><strong className="metric-value metric-value-text">{guidanceItems[0]?.title ?? 'No guidance available'}</strong><span className="metric-note">Expand a topic for practical guidance</span></Card>
       </section>
 
       <section className="section-block">
@@ -131,70 +62,64 @@ export function LifecyclePage() {
         </TabList>
       </section>
 
-      {availableMobilizeActions.length > 0 && (
-        <section className="section-block" aria-label="Typical Mobilize actions">
+      <section className="section-block" aria-label={`${selectedStage} guidance`}>
           <div className="section-heading">
-            <h2><ClipboardTaskRegular aria-hidden="true" /> Typical Mobilize actions</h2>
-            <span>Based on the Delivery Lead Project Journey; tailor to the contract and approved methodology.</span>
+            <h2><ClipboardTaskRegular aria-hidden="true" /> Guidance for {selectedStage}</h2>
+            <span>Guidance only · confirm task completion in Azure DevOps</span>
           </div>
-          <ul className="recommended-actions">
-            {availableMobilizeActions.map((action) => (
-              <li key={action.title}>
-                <div>
-                  <strong>{action.title}</strong>
-                  <p>{action.description}</p>
-                  <span>Evidence: {action.evidence}</span>
-                  <span>Source tool: {action.sourceTool || 'Add when applicable'}</span>
-                </div>
-                <Button
-                  appearance="subtle"
-                  size="small"
-                  icon={<AddRegular />}
-                  disabled={addingSuggestion !== null}
-                  onClick={() => void addMobilizeAction(action)}
-                >
-                  {addingSuggestion === action.title ? 'Adding' : 'Add'}
-                </Button>
+          <p className="stakeholder-guidance-intro">Use these topics to guide the DL’s work. They are not work items or completion gates; record completion in the task system and source of record.</p>
+          <ul className="lifecycle-guidance-list">
+            {guidanceItems.map((item) => (
+              <li key={item.id}>
+                <details id={`guidance-${item.id}`} className="lifecycle-guidance-item">
+                  <summary>
+                    <span>
+                      <strong>{item.title}</strong>
+                      <small>{item.sourceTool ? `Source: ${item.sourceTool}` : 'Source: project-specific plan or approved method'}</small>
+                      <small>Documents to consult or review: {item.documents}</small>
+                    </span>
+                    <span className="guidance-disclosure-label">How to and pitfalls</span>
+                  </summary>
+                  <div className="guidance-detail-grid">
+                    <div><h3>How to approach</h3><p>{item.howTo}</p></div>
+                    <div><h3>Pitfalls to watch</h3><p>{item.watchFor}</p></div>
+                  </div>
+                </details>
               </li>
             ))}
           </ul>
-          {suggestionError && <p className="form-error" role="alert">{suggestionError}</p>}
-        </section>
-      )}
+      </section>
 
       <section className="section-block">
         <div className="section-heading">
-          <h2><ClipboardTaskRegular aria-hidden="true" /> {selectedStage} actions</h2>
-          <Badge appearance="tint" color={completed === stageItems.length && stageItems.length ? 'success' : 'subtle'}>{completed} / {stageItems.length} complete</Badge>
+          <h2><ClipboardTaskRegular aria-hidden="true" /> Optional local follow-ups</h2>
+          <Badge appearance="tint" color="subtle">Not a task completion record</Badge>
         </div>
+        <p className="disclaimer-line">Use this area for extra local notes only. Official task status and completion evidence belong in Azure DevOps or the project's source tool.</p>
+        {deleteError && <p className="form-error" role="alert">{deleteError}</p>}
         <DataState
           state={state}
           error={error}
           onRetry={() => void reload()}
           isEmpty={!stageItems.length}
-          emptyTitle={`No checklist items for ${selectedStage}`}
-          emptyText="Add a local checklist item for this stage. No client or engagement is prefilled."
-          emptyAction={{ label: 'Add lifecycle action', onClick: () => setAdding(true) }}
+          emptyTitle={`No local follow-ups for ${selectedStage}`}
+          emptyText="Guidance topics above are not saved as actions. Add an optional local follow-up only when useful."
+          emptyAction={{ label: 'Add local follow-up', onClick: () => setAdding(true) }}
         >
-          <WorkItemTable items={stageItems} onEdit={(item) => { setEditingItem(item); setAdding(true); }} onStatusChange={(item, status) => void updateStatus(item, status)} />
+          <WorkItemTable items={stageItems} onEdit={() => setAdding(true)} onStatusChange={(item, status) => void updateStatus(item, status)} onDelete={(item) => void deleteLocalFollowUp(item)} />
         </DataState>
       </section>
 
       {adding && (
         <Card className="form-panel" appearance="outline">
-          <div className="section-heading"><h2>{editingItem ? 'Edit lifecycle action' : 'Add lifecycle action'}</h2><Button appearance="subtle" onClick={() => { setAdding(false); setEditingItem(null); }}>Cancel</Button></div>
-          <WorkItemForm
-            key={editingItem?.id ?? selectedStage}
-            onSave={saveItem}
-            submitLabel={editingItem ? 'Save changes' : 'Create lifecycle action'}
-            initialValue={editingItem ?? { title: '', category: 'checklist', stage: selectedStage, status: 'not-started', owner: '', dueDate: '', evidence: '', sourceTool: '', sourceUrl: '', notes: '' }}
-          />
+          <div className="section-heading"><h2>Add local follow-up</h2><Button appearance="subtle" onClick={() => setAdding(false)}>Cancel</Button></div>
+          <WorkItemForm key={selectedStage} onSave={addItem} submitLabel="Create local follow-up" initialValue={{ title: '', category: 'action', stage: selectedStage, status: 'not-started', owner: '', dueDate: '', evidence: '', sourceTool: '', sourceUrl: '', notes: '' }} />
         </Card>
       )}
 
       <div className="action-bar">
-        <span>Owners, dates, evidence, and checklist state clear when this page is refreshed.</span>
-        <Button appearance="primary" icon={<AddRegular />} onClick={() => setAdding(true)}>Add lifecycle action</Button>
+        <span>Guidance does not track completion. Confirm phase work in Azure DevOps or the system of record.</span>
+        <Button appearance="primary" icon={<AddRegular />} onClick={() => setAdding(true)}>Add local follow-up</Button>
       </div>
     </div>
   );

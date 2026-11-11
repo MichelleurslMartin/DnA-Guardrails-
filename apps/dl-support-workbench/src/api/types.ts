@@ -98,6 +98,7 @@ export interface HvlvReconciliationSnapshot {
 }
 
 export interface HvlvReasonCommentInput {
+  projectId: string;
   payPeriodStart: string;
   payPeriodEnd: string;
   enterpriseId: string;
@@ -136,11 +137,46 @@ export interface FinancialGovernanceSnapshot {
   hvlvReconciliation: HvlvReconciliationSnapshot | null;
 }
 
+export interface PortfolioProjectSnapshot {
+  projectId: string;
+  projectName: string;
+  clientName: string;
+  sourceLinks: PortfolioProjectLinks;
+  updatedAt: string;
+  financialGovernance: FinancialGovernanceSnapshot;
+}
+
+export interface ProjectSourceLink {
+  url: string;
+  externalId: string;
+}
+
+export interface PortfolioProjectLinks {
+  mme: ProjectSourceLink;
+  dna: ProjectSourceLink;
+  aep: ProjectSourceLink;
+  sharepoint: ProjectSourceLink;
+  myWizzard: ProjectSourceLink;
+  hvlv: ProjectSourceLink;
+}
+
+export interface PortfolioProjectDraft {
+  projectName: string;
+  clientName: string;
+  sourceLinks: PortfolioProjectLinks;
+}
+
+export interface PortfolioSnapshot {
+  asOf: string | null;
+  projects: PortfolioProjectSnapshot[];
+}
+
 export interface WorkbenchData {
   projectName: string;
   engagements: EngagementWorkspace;
   items: WorkItem[];
   financialGovernance: FinancialGovernanceSnapshot;
+  portfolio: PortfolioSnapshot;
 }
 
 export interface WorkbenchPreferences {
@@ -151,11 +187,16 @@ export interface ApiClient {
   getWorkbench(): Promise<WorkbenchData>;
   createWorkItem(input: WorkItemDraft): Promise<WorkItem>;
   updateWorkItem(id: string, updates: WorkItemDraft): Promise<WorkItem>;
+  deleteWorkItem(id: string): Promise<void>;
+  createPortfolioProject(input: PortfolioProjectDraft): Promise<PortfolioProjectSnapshot>;
+  updatePortfolioProject(projectId: string, input: PortfolioProjectDraft): Promise<PortfolioProjectSnapshot>;
+  getPortfolioProjectEngagements(projectId: string): Promise<EngagementWorkspace>;
+  savePortfolioProjectEngagements(projectId: string, input: EngagementWorkspace): Promise<EngagementWorkspace>;
   saveEngagements(input: EngagementWorkspace): Promise<EngagementWorkspace>;
   saveProjectName(name: string): Promise<string>;
   getPreferences(): Promise<WorkbenchPreferences>;
   savePreferences(input: WorkbenchPreferences): Promise<WorkbenchPreferences>;
-  getHvlvReconciliationComments(payPeriodStart: string, payPeriodEnd: string): Promise<HvlvReasonComment[]>;
+  getHvlvReconciliationComments(projectId: string, payPeriodStart: string, payPeriodEnd: string): Promise<HvlvReasonComment[]>;
   saveHvlvReconciliationComment(input: HvlvReasonCommentInput): Promise<HvlvReasonComment>;
   getHvlvReasonIdeas(input: HvlvReasonIdeaRequest): Promise<string[]>;
 }

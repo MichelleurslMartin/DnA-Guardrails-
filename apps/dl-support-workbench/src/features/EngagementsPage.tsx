@@ -7,13 +7,15 @@ import {
   Input,
   ProgressBar,
   Select,
+  Tab,
+  TabList,
   Textarea,
   Title2,
 } from '@fluentui/react-components';
 import { ArrowSyncCheckmarkRegular, BuildingRegular, ShieldTaskRegular } from '../components/icons';
 import { api } from '../api';
 import { useWorkbench } from '../app/WorkbenchContext';
-import type { EngagementRecord, EngagementWorkspace, FinancialGovernanceSnapshot, FollowUpStatus, HvlvReasonComment, HvlvReconciliationSnapshot, MatchStatus, VerificationStatus } from '../api/types';
+import type { EngagementRecord, EngagementWorkspace, FinancialGovernanceSnapshot, FollowUpStatus, HvlvReasonComment, HvlvReconciliationSnapshot, MatchStatus, PortfolioProjectLinks, PortfolioProjectSnapshot, VerificationStatus } from '../api/types';
 import { DataState } from '../components/States';
 import { calculateFinancialGovernanceMetrics, calculateHvlvReconciliation } from './financialGovernance';
 
@@ -40,6 +42,122 @@ const matchOptions: { value: MatchStatus; label: string }[] = [
   { value: 'access-needed', label: 'Access needed' },
   { value: 'follow-up', label: 'Follow-up needed' },
 ];
+
+const EMPTY_WORKSPACE_TAB_ID = 'current-workspace';
+
+interface EngagementProjectTab {
+  id: string;
+  label: string;
+  project: PortfolioProjectSnapshot | null;
+}
+
+function emptyEngagementWorkspace(clientProjectName = ''): EngagementWorkspace {
+  const emptyRecord: EngagementRecord = {
+    name: '', identifier: '', url: '', verificationStatus: 'not-verified', verifiedBy: '', verifiedOn: '',
+    evidence: '', accessNotes: '', followUpOwner: '', followUpDueDate: '', followUpStatus: 'not-started',
+  };
+  return {
+    clientProjectName,
+    aep: { ...emptyRecord },
+    bizapps: { ...emptyRecord },
+    matchStatus: 'not-checked',
+    matchNotes: '',
+    matchOwner: '',
+    matchDueDate: '',
+    matchFollowUpStatus: 'not-started',
+  };
+}
+
+function ProjectSourceLinks({ links }: { links: PortfolioProjectLinks }) {
+  const sources: { key: keyof PortfolioProjectLinks; label: string }[] = [
+    { key: 'mme', label: 'MME' },
+    { key: 'dna', label: 'DnA' },
+    { key: 'aep', label: 'AEP' },
+    { key: 'sharepoint', label: 'SharePoint' },
+    { key: 'myWizzard', label: 'myWizzard' },
+    { key: 'hvlv', label: 'HVLV' },
+  ];
+  return (
+    <div className="portfolio-project-links">
+      {sources.map((source) => {
+        const link = links[source.key];
+        const url = safeHttpUrl(link.url);
+        return <div key={source.key}>{url ? <a href={url} target="_blank" rel="noreferrer">{source.label}</a> : <span>{source.label}: not linked</span>}{link.externalId && <small>{link.externalId}</small>}</div>;
+      })}
+    </div>
+  );
+}
+
+const sampleFinancialGovernance: FinancialGovernanceSnapshot = {
+  asOf: '2026-11-10T12:00:00Z',
+  mme: {
+    engagementUrl: 'https://example.test/mme/sample-engagement',
+    lastSyncedAt: '2026-11-10T12:00:00Z',
+    weeklyPlan: [
+      { weekStart: '2026-10-26', plannedHours: 100 },
+      { weekStart: '2026-11-02', plannedHours: 100 },
+      { weekStart: '2026-11-09', plannedHours: 100 },
+      { weekStart: '2026-11-16', plannedHours: 100 },
+      { weekStart: '2026-11-23', plannedHours: 100 },
+    ],
+  },
+  azureDevOps: {
+    projectUrl: 'https://example.test/ado/sample-project',
+    lastSyncedAt: '2026-11-10T12:00:00Z',
+    originalEstimateHours: 480,
+    completedWorkHours: 215,
+  },
+  hvlvReconciliation: {
+    payPeriodStart: '2026-10-26',
+    payPeriodEnd: '2026-11-08',
+    mmeEngagementUrl: 'https://example.test/mme/sample-engagement',
+    mmeLastSyncedAt: '2026-11-09T12:00:00Z',
+    hvlvSourceUrl: 'https://example.test/hvlv/sample-period',
+    hvlvLastSyncedAt: '2026-11-09T12:00:00Z',
+    azureDevOpsPlan: {
+      projectUrl: 'https://example.test/ado/sample-project',
+      lastSyncedAt: '2026-11-09T12:00:00Z',
+      plannedHours: 190,
+    },
+    mmeResourcePlan: [
+      { enterpriseId: 'E001', resourceName: 'Consultant A', costCollectorId: 'CC-100', plannedHours: 80 },
+      { enterpriseId: 'E002', resourceName: 'Consultant B', costCollectorId: 'CC-100', plannedHours: 80 },
+      { enterpriseId: 'E003', resourceName: 'Consultant C', costCollectorId: 'CC-200', plannedHours: 40 },
+    ],
+    hvlvSubmissions: [
+      { enterpriseId: 'E001', resourceName: 'Consultant A', costCollectorId: 'CC-100', submittedHours: 72 },
+      { enterpriseId: 'E002', resourceName: 'Consultant B', costCollectorId: 'CC-100', submittedHours: 82 },
+      { enterpriseId: 'E004', resourceName: 'Consultant D', costCollectorId: 'CC-200', submittedHours: 8 },
+    ],
+  },
+};
+
+const sampleReasonComments: HvlvReasonComment[] = [
+  {
+    projectId: 'sample-erp-01', payPeriodStart: '2026-10-26', payPeriodEnd: '2026-11-08', enterpriseId: 'E001', costCollectorId: 'CC-100',
+    comment: 'Sample DL note: 8 fewer hours than MME. Verify early completion and accepted work with the stream lead; confirm with CFM whether the forecast stays stable, then update MME if agreed. Follow up by 2026-11-12.',
+    updatedAt: '2026-11-09T12:00:00Z',
+  },
+  {
+    projectId: 'sample-erp-01', payPeriodStart: '2026-10-26', payPeriodEnd: '2026-11-08', enterpriseId: 'E002', costCollectorId: 'CC-100',
+    comment: 'Sample DL note: 2 extra hours. Check approved scope and evidence; raise a change request if scope expanded, or record the approval if it did not. Follow up with the workstream lead by 2026-11-12.',
+    updatedAt: '2026-11-09T12:00:00Z',
+  },
+  {
+    projectId: 'sample-erp-01', payPeriodStart: '2026-10-26', payPeriodEnd: '2026-11-08', enterpriseId: 'E003', costCollectorId: 'CC-200',
+    comment: 'Sample DL note: 40 planned hours have no HVLV entry. Ask the consultant and approver to submit or approve time; recheck after the myTE transfer. Owner: stream lead; due 2026-11-12.',
+    updatedAt: '2026-11-09T12:00:00Z',
+  },
+  {
+    projectId: 'sample-erp-01', payPeriodStart: '2026-10-26', payPeriodEnd: '2026-11-08', enterpriseId: 'E004', costCollectorId: 'CC-200',
+    comment: 'Sample DL note: 8 hours appear without an MME plan. Verify the engagement and cost collector with Finance; correct the allocation or add approved work to MME. Owner: DL; due 2026-11-12.',
+    updatedAt: '2026-11-09T12:00:00Z',
+  },
+];
+
+function financialPreviewRequested(): boolean {
+  return import.meta.env.DEV && new URLSearchParams(window.location.search).get('financial-preview') === 'sample';
+}
 
 function safeHttpUrl(value: string): string | null {
   try {
@@ -68,11 +186,11 @@ function formatSyncTime(value: string): string {
   return Number.isNaN(date.getTime()) ? 'Sync time unavailable' : date.toLocaleString();
 }
 
-function reconciliationKey(enterpriseId: string, costCollectorId: string): string {
-  return JSON.stringify([enterpriseId, costCollectorId]);
+function reconciliationKey(projectId: string, enterpriseId: string, costCollectorId: string): string {
+  return JSON.stringify([projectId, enterpriseId, costCollectorId]);
 }
 
-function HvlvReconciliation({ snapshot }: { snapshot: HvlvReconciliationSnapshot | null }) {
+function HvlvReconciliation({ snapshot, projectId, previewMode }: { snapshot: HvlvReconciliationSnapshot | null; projectId: string; previewMode: boolean }) {
   const metrics = snapshot ? calculateHvlvReconciliation(snapshot) : null;
   const [reasonComments, setReasonComments] = useState<Record<string, HvlvReasonComment>>({});
   const [reasonDrafts, setReasonDrafts] = useState<Record<string, string>>({});
@@ -92,14 +210,24 @@ function HvlvReconciliation({ snapshot }: { snapshot: HvlvReconciliationSnapshot
       setReasonDrafts({});
       return;
     }
+    if (previewMode) {
+      const sampleComments = Object.fromEntries(sampleReasonComments.map((comment) => [
+        reconciliationKey(projectId, comment.enterpriseId, comment.costCollectorId),
+        comment,
+      ]));
+      setReasonComments(sampleComments);
+      setReasonDrafts(Object.fromEntries(Object.entries(sampleComments).map(([key, comment]) => [key, comment.comment])));
+      setLoadingComments(false);
+      return;
+    }
     let active = true;
     setLoadingComments(true);
     setReasonError(null);
-    void api.getHvlvReconciliationComments(payPeriodStart, payPeriodEnd)
+    void api.getHvlvReconciliationComments(projectId, payPeriodStart, payPeriodEnd)
       .then((comments) => {
         if (!active) return;
         const nextComments = Object.fromEntries(comments.map((comment) => [
-          reconciliationKey(comment.enterpriseId, comment.costCollectorId),
+          reconciliationKey(projectId, comment.enterpriseId, comment.costCollectorId),
           comment,
         ]));
         setReasonComments(nextComments);
@@ -112,16 +240,17 @@ function HvlvReconciliation({ snapshot }: { snapshot: HvlvReconciliationSnapshot
         if (active) setLoadingComments(false);
       });
     return () => { active = false; };
-  }, [payPeriodStart, payPeriodEnd]);
+  }, [projectId, payPeriodStart, payPeriodEnd, previewMode]);
 
   async function saveReason(enterpriseId: string, costCollectorId: string): Promise<void> {
-    if (!snapshot) return;
-    const key = reconciliationKey(enterpriseId, costCollectorId);
+    if (!snapshot || previewMode) return;
+    const key = reconciliationKey(projectId, enterpriseId, costCollectorId);
     setSavingReasonKey(key);
     setReasonError(null);
     setReasonStatuses((current) => ({ ...current, [key]: '' }));
     try {
       const saved = await api.saveHvlvReconciliationComment({
+        projectId,
         payPeriodStart: snapshot.payPeriodStart,
         payPeriodEnd: snapshot.payPeriodEnd,
         enterpriseId,
@@ -140,9 +269,26 @@ function HvlvReconciliation({ snapshot }: { snapshot: HvlvReconciliationSnapshot
 
   async function requestIdeas(row: ReturnType<typeof calculateHvlvReconciliation>['rows'][number]): Promise<void> {
     if (!snapshot) return;
-    const key = reconciliationKey(row.enterpriseId, row.costCollectorId);
+    const key = reconciliationKey(projectId, row.enterpriseId, row.costCollectorId);
     setLoadingIdeasKey(key);
     setIdeaErrors((current) => ({ ...current, [key]: '' }));
+    if (previewMode) {
+      setIdeasByResource((current) => ({
+        ...current,
+        [key]: [
+          'Sample idea: could approved additional work or changed scope explain the variance? Check the authorization and change request.',
+          'Sample idea: was time entered against the wrong engagement or cost collector? Verify the source entry.',
+          'Sample idea: was contingency approved and used? Confirm the decision and forecast treatment.',
+          'Sample idea: was work completed earlier than planned? Compare delivery records with the MME plan dates.',
+          'Sample idea: does MME still show the prior resource plan? Check the handover and update history.',
+          'Sample idea: are hours missing, late, or still awaiting HVLV approval or transfer through myTE?',
+          'Sample idea: is a capacity or capability support need affecting the variance? Discuss with the team; do not infer individual performance.',
+          'Sample idea: would an approved MME replan preserve the agreed budget? Validate with CFM before changing the forecast.',
+        ],
+      }));
+      setLoadingIdeasKey(null);
+      return;
+    }
     try {
       const ideas = await api.getHvlvReasonIdeas({
         payPeriodStart: snapshot.payPeriodStart,
@@ -171,7 +317,7 @@ function HvlvReconciliation({ snapshot }: { snapshot: HvlvReconciliationSnapshot
     <section className="section-block" aria-label="Financial governance">
       <div className="section-heading">
         <h2>Financial governance</h2>
-        <span>MME resource plan vs HVLV submitted hours</span>
+        <span>MME resource plan vs Azure DevOps task plan vs HVLV submitted time</span>
       </div>
       {snapshot && metrics ? (
         <>
@@ -195,22 +341,22 @@ function HvlvReconciliation({ snapshot }: { snapshot: HvlvReconciliationSnapshot
               {snapshot.azureDevOpsPlan && safeHttpUrl(snapshot.azureDevOpsPlan.projectUrl) && <a href={safeHttpUrl(snapshot.azureDevOpsPlan.projectUrl) ?? undefined} target="_blank" rel="noreferrer">Open Azure DevOps plan</a>}
             </div>
           </div>
-          <p className="disclaimer-line">Pay period: {snapshot.payPeriodStart} to {snapshot.payPeriodEnd}. Early check uses HVLV submissions directly; it does not wait for transfer through myTE into MME actuals.</p>
+          <p className="disclaimer-line">Pay period: {snapshot.payPeriodStart} to {snapshot.payPeriodEnd}. HVLV is used for this early check before time transfers through myTE to MME actuals.</p>
           <div className="governance-progress-grid governance-reconciliation-metrics">
             <Card className="metric-card" appearance="outline">
-              <span className="metric-label">MME planned hours</span>
+              <span className="metric-label">MME planned</span>
               <strong className="metric-value">{formatHours(metrics.plannedHoursTotal)} h</strong>
-              <span className="metric-note">For this two-week pay period</span>
+              <span className="metric-note">Resource plan for this pay period</span>
             </Card>
             <Card className="metric-card" appearance="outline">
               <span className="metric-label">Azure DevOps task plan</span>
               <strong className="metric-value">{metrics.azureDevOpsPlannedHours === null ? 'Not connected' : `${formatHours(metrics.azureDevOpsPlannedHours)} h`}</strong>
-              <span className="metric-note">Task hours aggregated for this fortnight; no resource names matched</span>
+              <span className="metric-note">Aggregate task estimate; no person-level match</span>
             </Card>
             <Card className="metric-card" appearance="outline">
               <span className="metric-label">HVLV submitted</span>
               <strong className="metric-value">{formatHours(metrics.submittedHoursTotal)} h</strong>
-              <span className="metric-note">{formatHours(metrics.matchedPlannedHours)} of {formatHours(metrics.plannedHoursTotal)} planned hours covered ({formatPercent(metrics.coveragePercent)}); {formatHours(metrics.pendingPlanHours)} pending and {formatHours(metrics.unplannedActualHours)} unplanned</span>
+              <span className="metric-note">{formatHours(metrics.matchedPlannedHours)} of {formatHours(metrics.plannedHoursTotal)} plan covered ({formatPercent(metrics.coveragePercent)}); {formatHours(metrics.pendingPlanHours)} pending and {formatHours(metrics.unplannedActualHours)} unplanned</span>
             </Card>
             <Card className="metric-card" appearance="outline">
               <span className="metric-label">Pairwise variance</span>
@@ -221,10 +367,10 @@ function HvlvReconciliation({ snapshot }: { snapshot: HvlvReconciliationSnapshot
               </div>
             </Card>
           </div>
-          <p className="disclaimer-line">Azure DevOps planned hours are an aggregate of task estimates for this same pay period. No person-level match is attempted. The resource table below compares MME plans with HVLV submissions only.</p>
+          <p className="disclaimer-line">Azure DevOps task estimates are compared as a period aggregate because tasks do not carry named resources. The resource table compares MME and HVLV only.</p>
           <div className="governance-table-wrap">
             <table className="governance-table resource-reconciliation-table">
-              <caption>Resource-level comparison by enterprise ID and cost collector. Every variance, missing submission, or unplanned actual needs DL review.</caption>
+              <caption>Resource-level comparison by enterprise ID and cost collector. Variances, missing submissions, and unplanned actuals require DL review.</caption>
               <thead>
                 <tr>
                   <th scope="col">Resource</th>
@@ -239,9 +385,9 @@ function HvlvReconciliation({ snapshot }: { snapshot: HvlvReconciliationSnapshot
               </thead>
               <tbody>
                 {metrics.rows.map((row) => {
+                  const key = reconciliationKey(projectId, row.enterpriseId, row.costCollectorId);
                   const statusLabel = row.status === 'submitted' ? 'Submitted' : row.status === 'awaiting' ? 'Awaiting HVLV' : 'Unplanned actual';
                   const statusColor = row.status === 'submitted' ? 'success' : row.status === 'awaiting' ? 'warning' : 'danger';
-                  const key = reconciliationKey(row.enterpriseId, row.costCollectorId);
                   const needsReview = row.status !== 'submitted' || Math.abs(row.varianceHours ?? 0) > 0.01;
                   const savedComment = reasonComments[key]?.comment ?? '';
                   const reasonSaved = reasonStatuses[key] === 'DL reason saved.';
@@ -265,14 +411,19 @@ function HvlvReconciliation({ snapshot }: { snapshot: HvlvReconciliationSnapshot
                               rows={3}
                               maxLength={4000}
                               value={reasonDrafts[key] ?? savedComment}
-                              onChange={(_, data) => setReasonDrafts((current) => ({ ...current, [key]: data.value }))}
-                              placeholder="Record the cause the DL verified and the follow-up, such as a change request or MME plan update."
+                              onChange={(_, input) => setReasonDrafts((current) => ({ ...current, [key]: input.value }))}
+                              placeholder="Cause verified + evidence + next action + owner + due date. Example: HVLV awaiting approval; approver to submit by Thursday; recheck after myTE transfer."
                             />
                             <div className="reason-actions">
                               <Button appearance="subtle" size="small" disabled={loadingIdeasKey !== null} onClick={() => void requestIdeas(row)}>
                                 {loadingIdeasKey === key ? 'Getting ideas…' : 'AI reason ideas'}
                               </Button>
-                              <Button appearance="primary" size="small" disabled={savingReasonKey !== null || loadingComments || !(reasonDrafts[key] ?? savedComment).trim()} onClick={() => void saveReason(row.enterpriseId, row.costCollectorId)}>
+                              <Button
+                                appearance="primary"
+                                size="small"
+                                disabled={savingReasonKey !== null || loadingComments || !(reasonDrafts[key] ?? savedComment).trim()}
+                                onClick={() => void saveReason(row.enterpriseId, row.costCollectorId)}
+                              >
                                 {savingReasonKey === key ? 'Saving…' : 'Save reason'}
                               </Button>
                             </div>
@@ -283,7 +434,7 @@ function HvlvReconciliation({ snapshot }: { snapshot: HvlvReconciliationSnapshot
                             ) : null}
                             {ideaErrors[key] && <p className="form-error" role="alert">{ideaErrors[key]}</p>}
                             {reasonStatuses[key] && <p className={reasonSaved ? 'form-success' : 'form-error'} role={reasonSaved ? 'status' : 'alert'}>{reasonStatuses[key]}</p>}
-                            <span className="reason-help">AI ideas are hypotheses, not evidence. Verify the actual cause before saving.</span>
+                            <span className="reason-help">Examples to verify: approved extra work or change request, contingency use, early completion, late HVLV submission, wrong cost collector, or an MME plan that needs updating. Record evidence and the agreed owner, action, and due date. AI ideas are hypotheses, not evidence.</span>
                           </>
                         ) : <span>On plan</span>}
                       </td>
@@ -296,13 +447,14 @@ function HvlvReconciliation({ snapshot }: { snapshot: HvlvReconciliationSnapshot
           </div>
           {loadingComments && <p className="metric-note" role="status">Loading saved DL comments…</p>}
           {reasonError && <p className="form-error" role="alert">{reasonError}</p>}
-          <p className="disclaimer-line">Resource variance compares submitted hours with plan only for resources present in both MME and HVLV. Missing submissions and actual hours without a matching MME resource and cost collector are shown separately. No rates or revenue amounts are inferred.</p>
+          <p className="disclaimer-line">Resource variances compare only resources present in both MME and HVLV. Missing submissions and actual hours without a matching MME resource and cost collector are shown separately. No rates or revenue amounts are inferred.</p>
         </>
       ) : (
         <div className="governance-empty" role="status">
           <strong>Waiting for MME resource plan and HVLV time submissions</strong>
           <p>When both sources are connected, this check will compare the same two-week period by enterprise ID and cost collector.</p>
-          <p>It will flag missing submissions and HVLV hours without a matching MME plan. No sample values are shown.</p>
+          <p>Azure DevOps task hours will be compared as a period aggregate; no person-level match is attempted. No sample values are shown.</p>
+          {import.meta.env.DEV && <a href="/engagements?financial-preview=sample">Open sample financial preview</a>}
         </div>
       )}
     </section>
@@ -313,10 +465,6 @@ function DeliveryProgress({ snapshot }: { snapshot: FinancialGovernanceSnapshot 
   const metrics = calculateFinancialGovernanceMetrics(snapshot);
   const targetProgress = metrics?.plannedProgressPercent ?? 0;
   const actualProgress = metrics?.actualProgressPercent ?? 0;
-  const missingSources = [
-    !snapshot.mme && 'MME weekly resource plan',
-    !snapshot.azureDevOps && 'Azure DevOps effort data',
-  ].filter(Boolean);
 
   return (
     <section className="section-block" aria-label="Delivery progress">
@@ -324,7 +472,7 @@ function DeliveryProgress({ snapshot }: { snapshot: FinancialGovernanceSnapshot 
         <h2>Delivery progress</h2>
         <span>MME planned effort vs Azure DevOps completion · not financial actuals</span>
       </div>
-      <div className="governance-sources" aria-label="Financial data sources">
+      <div className="governance-sources governance-sources-two" aria-label="Delivery progress sources">
         <div>
           <strong>MME weekly plan</strong>
           <Badge appearance="tint" color={snapshot.mme ? 'success' : 'subtle'}>{snapshot.mme ? 'Connected' : 'Not connected'}</Badge>
@@ -338,7 +486,6 @@ function DeliveryProgress({ snapshot }: { snapshot: FinancialGovernanceSnapshot 
           {snapshot.azureDevOps && safeHttpUrl(snapshot.azureDevOps.projectUrl) && <a href={safeHttpUrl(snapshot.azureDevOps.projectUrl) ?? undefined} target="_blank" rel="noreferrer">Open Azure DevOps project</a>}
         </div>
       </div>
-
       {metrics ? (
         <>
           <div className="governance-progress-grid">
@@ -357,7 +504,7 @@ function DeliveryProgress({ snapshot }: { snapshot: FinancialGovernanceSnapshot 
             <Card className="metric-card" appearance="outline">
               <span className="metric-label">Variance to plan</span>
               <strong className="metric-value metric-value-text">{metrics.variancePercentagePoints === null ? 'Not available' : `${metrics.variancePercentagePoints > 0 ? '+' : ''}${metrics.variancePercentagePoints.toFixed(1)} pp`}</strong>
-              <span className="metric-note">{metrics.varianceHours > 0 ? '+' : ''}{formatHours(metrics.varianceHours)} hours versus planned effort to date</span>
+              <span className="metric-note">{formatSignedHours(metrics.varianceHours)} versus MME planned effort to date</span>
             </Card>
           </div>
           <div className="governance-baseline">
@@ -368,28 +515,21 @@ function DeliveryProgress({ snapshot }: { snapshot: FinancialGovernanceSnapshot 
           <div className="governance-table-wrap">
             <table className="governance-table">
               <caption>MME weekly plan and cumulative expected progress</caption>
-              <thead>
-                <tr><th scope="col">Week starting</th><th scope="col">Planned hours</th><th scope="col">Cumulative target</th></tr>
-              </thead>
+              <thead><tr><th scope="col">Week starting</th><th scope="col">Planned hours</th><th scope="col">Cumulative target</th></tr></thead>
               <tbody>
                 {metrics.weeklyPlan.map((week) => (
-                  <tr key={week.weekStart}>
-                    <td>{week.weekStart}</td>
-                    <td>{formatHours(week.plannedHours)} h</td>
-                    <td>{formatHours(week.cumulativePlannedHours)} h · {formatPercent(week.cumulativeProgressPercent)}</td>
-                  </tr>
+                  <tr key={week.weekStart}><td>{week.weekStart}</td><td>{formatHours(week.plannedHours)} h</td><td>{formatHours(week.cumulativePlannedHours)} h · {formatPercent(week.cumulativeProgressPercent)}</td></tr>
                 ))}
                 {!metrics.weeklyPlan.length && <tr><td colSpan={3}>No weekly plan rows were returned by MME.</td></tr>}
               </tbody>
             </table>
           </div>
-          <p className="disclaimer-line">Expected progress is cumulative MME planned hours through the comparison date, prorated across weekdays, divided by total planned hours. Actual progress is Azure DevOps completed effort divided by original estimated effort. Confirm that both sources cover the same engagement scope.</p>
         </>
       ) : (
         <div className="governance-empty" role="status">
-          <strong>{missingSources.length ? `Waiting for ${missingSources.join(' and ')}` : 'Baseline data is incomplete'}</strong>
-          <p>Once both feeds and a comparison timestamp are available, this view will compare MME planned hours with Azure DevOps estimated and completed effort.</p>
-          <p>Expected progress uses the MME weekly plan; actual progress uses Azure DevOps completed effort over original estimate. No sample values are shown.</p>
+          <strong>Waiting for MME and Azure DevOps effort data</strong>
+          <p>When both feeds are connected, this view will compare MME planned progress with Azure DevOps completed effort.</p>
+          <p>Azure DevOps task-plan hours are shown separately in Financial governance and are not matched to named resources.</p>
         </div>
       )}
     </section>
@@ -447,11 +587,50 @@ function PlatformForm({
 
 export function EngagementsPage() {
   const { data, state, error, reload, saveEngagements } = useWorkbench();
+  const previewMode = financialPreviewRequested();
+  const projectTabs: EngagementProjectTab[] = previewMode
+    ? [{ id: 'sample-erp-01', label: 'Finance modernization · Northstar Group', project: null }]
+    : data.portfolio.projects.map((project) => ({ id: project.projectId, label: `${project.projectName} · ${project.clientName}`, project }));
+  const hasLegacyEngagementData = Boolean(data.engagements.clientProjectName || data.engagements.aep.name || data.engagements.bizapps.name);
+  const showLegacyTab = !previewMode && (!projectTabs.length || hasLegacyEngagementData);
+  const tabs: EngagementProjectTab[] = [
+    ...projectTabs,
+    ...(showLegacyTab ? [{ id: EMPTY_WORKSPACE_TAB_ID, label: projectTabs.length ? 'Current workspace (unassigned)' : 'Current workspace', project: null }] : []),
+  ];
+  const [selectedTabId, setSelectedTabId] = useState('');
+  const selectedTab = tabs.find((tab) => tab.id === selectedTabId) ?? tabs[0];
+  const selectedProject = selectedTab?.id === EMPTY_WORKSPACE_TAB_ID ? null : selectedTab?.project ?? null;
+  const selectedProjectId = previewMode ? 'sample-erp-01' : selectedProject?.projectId ?? '';
+  const financialGovernance = previewMode ? sampleFinancialGovernance : selectedProject?.financialGovernance ?? data.financialGovernance;
   const [draft, setDraft] = useState<EngagementWorkspace>(data.engagements);
   const [saveMessage, setSaveMessage] = useState<string | null>(null);
   const [formError, setFormError] = useState<string | null>(null);
+  const [projectLoadError, setProjectLoadError] = useState<string | null>(null);
+  const [loadingProject, setLoadingProject] = useState(false);
 
-  useEffect(() => setDraft(data.engagements), [data.engagements]);
+  useEffect(() => {
+    let active = true;
+    setFormError(null);
+    setSaveMessage(null);
+    setProjectLoadError(null);
+    if (previewMode) {
+      setDraft(emptyEngagementWorkspace('Northstar Group · Finance modernization'));
+      setLoadingProject(false);
+      return () => { active = false; };
+    }
+    if (!selectedProjectId) {
+      setDraft(data.engagements);
+      setLoadingProject(false);
+      return () => { active = false; };
+    }
+    setDraft(emptyEngagementWorkspace(selectedProject?.clientName ?? selectedProject?.projectName ?? ''));
+    setLoadingProject(true);
+    void api.getPortfolioProjectEngagements(selectedProjectId)
+      .then((engagements) => { if (active) setDraft(engagements); })
+      .catch((cause: unknown) => { if (active) setProjectLoadError(cause instanceof Error ? cause.message : 'Project engagement checks could not be loaded.'); })
+      .finally(() => { if (active) setLoadingProject(false); });
+    return () => { active = false; };
+  }, [selectedProjectId, previewMode, data.engagements, selectedProject?.clientName, selectedProject?.projectName]);
 
   function updatePlatform(platform: Platform, record: EngagementRecord): void {
     setDraft((current) => ({ ...current, [platform]: record }));
@@ -459,6 +638,7 @@ export function EngagementsPage() {
 
   async function handleSave(event: React.FormEvent<HTMLFormElement>): Promise<void> {
     event.preventDefault();
+    if (previewMode) return;
     const verifiedRecords = [draft.aep, draft.bizapps].filter((record) => record.verificationStatus === 'verified');
     if (verifiedRecords.some((record) => !record.name.trim() || !record.identifier.trim() || !record.url.trim())) {
       setFormError('A manually verified record needs a name, identifier, and URL. Nothing has been checked automatically.');
@@ -471,27 +651,46 @@ export function EngagementsPage() {
       return;
     }
     try {
-      await saveEngagements(draft);
+      if (selectedProjectId) await api.savePortfolioProjectEngagements(selectedProjectId, draft);
+      else await saveEngagements(draft);
       setFormError(null);
-      setSaveMessage('Manual engagement details saved. No platform was checked.');
+      setSaveMessage(selectedProjectId ? 'Manual checks saved for this project. No platform was checked.' : 'Manual engagement details saved. No platform was checked.');
     } catch (cause) {
       setFormError(cause instanceof Error ? cause.message : 'The engagement record could not be saved.');
       setSaveMessage(null);
     }
   }
 
-  const hasRecordedEngagement = Boolean(data.engagements.aep.name || data.engagements.bizapps.name || data.engagements.clientProjectName);
+  const hasRecordedEngagement = Boolean(draft.aep.name || draft.bizapps.name || draft.clientProjectName);
 
   return (
     <div className="page-stack">
       <section className="page-intro">
         <div className="page-title-row"><ShieldTaskRegular aria-hidden="true" /><Title2 as="h1">Engagement Checks</Title2></div>
         <p>Record AEP and BizApps Platform details that you verify manually. This page never reads either platform.</p>
-        <span className="quiet-label">Manual records only · no platform connection</span>
+        <span className="quiet-label">AEP and BizApps checks are manual · financial feed status shown below</span>
       </section>
 
-      <HvlvReconciliation snapshot={data.financialGovernance.hvlvReconciliation} />
-      <DeliveryProgress snapshot={data.financialGovernance} />
+      <section className="section-block" aria-label="Project engagement selection">
+        <div className="section-heading"><h2>Project checks</h2><span>Engagement checks and financial signals are scoped to the selected project</span></div>
+        <TabList selectedValue={selectedTab?.id} onTabSelect={(_, tab) => setSelectedTabId(String(tab.value))} aria-label="Projects">
+          {tabs.map((tab) => <Tab key={tab.id} value={tab.id}>{tab.label}</Tab>)}
+        </TabList>
+        {selectedProject && (
+          <div className="portfolio-project-context">
+            <div><strong>{selectedProject.clientName} · {selectedProject.projectName}</strong><span>Project links are references only; source connections are not configured.</span></div>
+            {selectedProject.sourceLinks && <ProjectSourceLinks links={selectedProject.sourceLinks} />}
+            <a href="/portfolio">Manage project links in Portfolio</a>
+          </div>
+        )}
+        {!previewMode && projectTabs.length === 0 && <div className="governance-empty"><strong>No Portfolio projects registered</strong><p>Project-specific checks appear as tabs after a project is registered in Portfolio.</p><a href="/portfolio">Register a project in Portfolio</a></div>}
+        {loadingProject && <p className="metric-note" role="status">Loading project engagement checks…</p>}
+        {projectLoadError && <p className="form-error" role="alert">{projectLoadError}</p>}
+      </section>
+
+      {previewMode && <div className="sample-preview-notice" role="note"><span>SAMPLE PREVIEW · Illustrative MME, DnA/Azure DevOps, and HVLV values. Comments and AI ideas are mock values; nothing is saved.</span><a href="/engagements">Return to live view</a></div>}
+      <HvlvReconciliation snapshot={financialGovernance.hvlvReconciliation} projectId={selectedProjectId} previewMode={previewMode} />
+      <DeliveryProgress snapshot={financialGovernance} />
 
       <DataState state={state} error={error} onRetry={() => void reload()} isEmpty={!hasRecordedEngagement} emptyTitle="No engagement details recorded" emptyText="Enter the names, identifiers, and URLs you verify yourself. No client or engagement values are prefilled.">
         <Card className="match-summary" appearance="filled-alternative">
@@ -502,8 +701,8 @@ export function EngagementsPage() {
 
       <form className="page-stack" onSubmit={(event) => void handleSave(event)}>
         <Card className="form-panel" appearance="outline">
-          <div className="section-heading"><h2>Workspace reference</h2><span>Optional and blank by default</span></div>
-          <Field label="Client or project name"><Input aria-label="Client or project name" value={draft.clientProjectName} onChange={(_, input) => setDraft((current) => ({ ...current, clientProjectName: input.value }))} /></Field>
+          <div className="section-heading"><h2>{selectedProject ? 'Portfolio project reference' : 'Workspace reference'}</h2><span>{selectedProject ? 'Managed in Portfolio' : 'Optional and blank by default'}</span></div>
+          {selectedProject ? <p>{selectedProject.clientName} · {selectedProject.projectName}</p> : <Field label="Client or project name"><Input aria-label="Client or project name" value={draft.clientProjectName} onChange={(_, input) => setDraft((current) => ({ ...current, clientProjectName: input.value }))} /></Field>}
         </Card>
 
         <div className="engagement-grid">
@@ -522,7 +721,7 @@ export function EngagementsPage() {
           </div>
           {formError && <p className="form-error" role="alert">{formError}</p>}
           {saveMessage && <p className="form-success" role="status">{saveMessage}</p>}
-          <div className="form-actions"><Button appearance="primary" type="submit">Save manual engagement checks</Button></div>
+          <div className="form-actions"><Button appearance="primary" type="submit" disabled={previewMode || loadingProject}>{previewMode ? 'Preview only' : 'Save manual engagement checks'}</Button></div>
         </Card>
       </form>
       <p className="disclaimer-line">This is a manual record only. No AEP, BizApps Platform, or agent-service connection is active.</p>

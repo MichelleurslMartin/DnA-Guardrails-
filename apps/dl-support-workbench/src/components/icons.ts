@@ -8,6 +8,7 @@ export {
   CheckmarkCircleRegular,
   ClipboardTaskRegular,
   DataBarVerticalRegular,
+  DeleteRegular,
   EditRegular,
   HomeRegular,
   LightbulbRegular,
